@@ -65,6 +65,7 @@ const authorSchema = new Schema({
     role: {
         type: String,
         enum: ["admin", "author", "swot"],
+        default: "author",
         required: true
     },
     bookPublished: [

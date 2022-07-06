@@ -13,7 +13,14 @@ export const hashpassword = (plainPassword: string):string =>  {
     return bcrypt.hashSync(plainPassword, salt)
 }
 
-export const checkHash = (plainPassword, hashPassword) => {
-    bcrypt.compareSync( plainPassword, hashPassword )
-    return "Success"
+export const checkHash = (plainPassword: string, hashedPassword: string) => {
+   return bcrypt.compareSync( plainPassword, hashedPassword )
+    
+}
+
+//generate 6 digit Code
+export const generateVerificationCode = () => {
+
+    let token = 100000 + ( Math.floor(Math.random() * 100000) )
+    return token
 }

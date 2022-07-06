@@ -13,7 +13,7 @@ export const signUpAuthorValidation = ( payload: { [key: string]: any}) => {
         city: Joi.string().trim().required(),
         localGovt: Joi.string().trim().required(),
         postalCode: Joi.string().trim().required(), 
-        password: Joi.string().trim().required()
+        password: Joi.string().trim().min(6).required()
     }), payload )
 } 
 
@@ -23,6 +23,38 @@ export const signInAuthorValidation = ( payload: { [key: string]: any}) => {
         password: Joi.string().trim().required()
     }), payload )
 } 
+
+export const passwordVerificationEmailValidation = (payload: { [key: string]: any} ) => {
+    return validator(Joi.object({
+        email: Joi.string().email().trim().required()
+    }), payload)
+}
+
+export const passwordVerificationCodelValidation = (payload: { [key: string]: any} ) => {
+
+    return validator(Joi.object({
+        code: Joi.string().email().trim().min(6).max(6).required()
+    }), payload)
+   
+}
+
+export const resetpasswordValidation = (payload: { [key: string]: any}) => {
+    return validator(Joi.object({
+        code: Joi.string().email().trim().min(6).max(6).required(),
+        newPassword: Joi.string().trim().min(6).required(), 
+        confirmPassword:Joi.string().trim().min(6).required()
+    }), payload)
+    
+}
+
+export const changePasswordValidation = (payload: { [key: string]: any}) => {
+    return validator(Joi.object({
+        oldPassword: Joi.string().trim().min(6).required(), 
+        newPassword: Joi.string().trim().min(6).required(), 
+        confirmPassword:Joi.string().trim().min(6).required()
+    }), payload)
+    
+}
 
 export const addbookValidation = ( payload: { [key: string]: any}) => {
     return validator(Joi.object({

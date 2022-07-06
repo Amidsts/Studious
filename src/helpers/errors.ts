@@ -43,3 +43,14 @@ export class badRequestError extends baseError {
   }
 }
 
+export class conflictError extends baseError {
+  constructor ( err?: {[key : string]: any} | string  ) {
+  super();
+  this.success = false,
+  this.errorName = "conflict",
+  this.httpStatusCode = 409,
+  this.errMessage = err,
+  this.data = {}
+ 
+  }
+}
