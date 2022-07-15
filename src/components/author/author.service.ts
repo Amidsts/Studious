@@ -3,11 +3,12 @@ import { generateToken } from "../../utils/auth"
 import {adminstatusENUM, bookStatusENUM} from "../../helpers/custom"
 import authorAccess from "../authModel/auth.author.model"
 import { hashpassword, checkHash } from "../../helpers/general"
-import { 
+import {
         authorizationError, 
         notFoundError, 
         badRequestError,
-        conflictError
+        conflictError,
+        expectationFailedError
     } from "../../helpers/errors"
 import { 
         signUpAuthorValidation,
@@ -15,14 +16,19 @@ import {
         passwordVerificationEmailValidation,
         passwordVerificationCodelValidation,
         resetpasswordValidation,
-        changePasswordValidation
+        changePasswordValidation, 
+        addbookValidation
     } from "./author.validation"
 import book from "../../model/books.model"
 import { consecutivefailedPassword } from "../../middlewares/ratelimiter"
 import {generateVerificationCode} from "../../helpers/general"
 import {SETEX, GET, DEL} from "../../utils/redis"
+import author from "./author.model"
+import {uploader} from "../../config/cloudinary.config"
 
 import { Request, Response } from "express"
+import fileUpload, {UploadedFile} from "express-fileupload"
+import path from "path"
 
 
 export const signupAuthor = async(
@@ -89,60 +95,15 @@ export const signinAuthor = async (payload: { [key:string] : any}, res: Response
 
     const isLoggedIn = authorSecret.isLoggedIn
 
-    // //use this for now
-    // if (comparePassword) {
-    //     await authorAccess.updateOne({password: authorSecret.password}, {isLoggedIn: true})
-    // }
-    // //use this for now
-    // if(!comparePassword) {
-    //     throw new notFoundError("invalid email or passsword")
-    // }
-    // console.log(`consecutive failed password in authorService without () ${consecutivefailedPassword}`)
+    //use this for now
+    if (comparePassword) {
+        await authorAccess.updateOne({password: authorSecret.password}, {isLoggedIn: true})
+    }
+    //use this for now
+    if(!comparePassword) {
+        throw new notFoundError("invalid email or passsword")
+    }
 
-    // console.log(`consecutive failed password in authorService with () ${consecutivefailedPassword}`)
-
-    // const getConsumedPoint = await consecutivefailedPassword.get(`${password}`)
-    // const getConsumedPoint = await consecutivefailedPassword(`${password}`)
-    // console.log(`get consumed point here${getConsumedPoint}`)
-
-    // if (comparePassword) {
-    //     await authorAccess.updateOne({password: authorSecret.password, isLoggedIn: true})
-
-    //     if (getConsumedPoint !== null && getConsumedPoint.consumedPoints > 0) {
-    //         // Reset on successful authorisation console.log(`consecutive failed password in authorService without () ${consecutivefailedPassword}`)
-    //         await consecutivefailedPassword.delete(password);
-
-    //      }
-    //     console.log("you have logged in successfully!")
-    // }
-
-    // if(!comparePassword) {
-        
-    //     consecutivefailedPassword.consume(password, 1)
-    //     .then( val => {
-    //         // console.log(val)
-    //         // console.log(getConsumedPoint.consumedPoints)
-    //         throw new notFoundError("invalid email or passsword")
-    //     //    return val
-    //     })
-    //     .catch( err => {
-            
-    //         // console.log(err)
-    //         if (err instanceof Error) {
-    //             console.log(err)
-    //            return 
-               
-    //         } else {
-                
-    //             res.set('Retry-After', String( Math.round(err.msBeforeNext / 1000) ) || "1");
-                
-    //            return res.status(429).send('Too Many Requests');
-    //         }
-           
-    //     })
-    // } 
-
-    
     if (!authorSecret) {
         throw new notFoundError("invalid email or passsword")
     } 
@@ -151,7 +112,7 @@ export const signinAuthor = async (payload: { [key:string] : any}, res: Response
         throw new badRequestError("account is disabled, suspended or inactive")   
     }  
 
-    const Token = generateToken({email:authorExist.email, status :authorExist.status})
+    const Token = generateToken({id:authorExist._id, status :authorExist.status})
 
     return {
         name : authorExist.firstName + " " + authorExist.lastName,
@@ -175,7 +136,7 @@ export const passwordVerificationEmail = async ( payload: { [key: string]: any} 
 
     //save verification code
     await SETEX(`authorVerificationcode_${code}`, code)
-    
+
     //send verification code to user's mail
     return code
 } 
@@ -210,58 +171,65 @@ export const resetPassword = async (payload: {[key: string] : any}, authorId: st
         throw new badRequestError("password must be the same")
     }
 
-   const author = await Author.findOne({_id : payload.adminId})
+   const author = await Author.findOne({_id : authorId})
 
    if (!author){
     throw new conflictError("there is a problem, pls try again")
    }
 
-   const authoraccess = await authorAccess.updateOne({author: authorId}, {password : newPassword}, async (err, newPwd) => {
+   const authoraccess = await authorAccess.updateOne({author: authorId} , {password : newPassword})
 
-    if (err) return err ;
+    if (!authoraccess) {
+        throw new expectationFailedError("unable to update password for some reason, pls try again")
+    };
 
-    await DEL(`verificationcode${code}`)
+    await DEL(`authorVerificationcode_${code}`) 
+
     return "password has been updated"
-   })
 
 }
 
 //protected route continues
 //change password while online
 export const changePassword = async (payload : {[key: string] : any}, authorId) => {
-    const {oldPassword, newPassword, confirmPassword} = resetpasswordValidation(payload)
+    const {oldPassword, newPassword, confirmPassword} = changePasswordValidation(payload)
 
-    const author = await authorAccess.findOne({ _id: authorId })
-
-   if (!author){
+    const authoraccessCheck = await authorAccess.findOne({ author: authorId })
+    
+   if (!authoraccessCheck){
         throw new conflictError("there is a problem, pls try again")
    }
 
-   const comparePassword = checkHash(oldPassword, author.password)
+   const comparePassword = checkHash(oldPassword, authoraccessCheck.password)
 
    if (!comparePassword) {
-    throw new authorizationError("author does not exist")
+    throw new authorizationError("password does not exist") 
    }
 
     if ( newPassword !== confirmPassword) {
         throw new badRequestError("password must be the same")
     }
 
-   const authoraccess = await authorAccess.updateOne({author: payload._id}, {password : newPassword}, (err, newPwd) => {
+    const hashedPassword = hashpassword(newPassword)
 
-    if (err) return err ;
-    return "password has been updated"
-   })
+   const authoraccess = await authorAccess.updateOne({author: authorId}, {password : hashedPassword})
+
+   if (!authoraccess) {
+       throw new conflictError("unable to update password")
+   }
+
+   return "password has been updated successfully!"
 }
 
 
 // author add one book
 export const addbook  = async (payload: {[key: string] : any}, authorid: string) => {
+
     const bookExist = await book.findOne({bookTitle: payload.bookTitle, authorId: authorid})
 
     if (bookExist) {
-        throw new authorizationError("book already exist")
-    }
+        throw new conflictError("book already exist")
+    }  
 
     // if (bookExist.authorId.status)
 
@@ -275,12 +243,96 @@ export const addbook  = async (payload: {[key: string] : any}, authorid: string)
         discountPrice:payload.discountPrice,
         bookSwot: payload.bookSwot,
         status: bookStatusENUM.AVAILABLE,
-        img: payload.img,
         categoryType : payload.categoryType
-    })
+    }).save()
+
+    return newBook
+
 }
 
-//add multiple books at once in csv file
-//go to next page
+export const addImage = async (imgFile, bookId) => {
+    // const Path = path.join(__dirname, `../../upload/${image.name}`)
+    const imageExist = await book.findOne({_id: bookId})
+
+    const image  = (imgFile) as UploadedFile
+
+    async function updateImage(imgId, imgUrl) {
+
+        try {
+            const updateBook = await book.findOneAndUpdate({_id: bookId}, {"img.imgId": imgId,"img.imgLink": imgUrl})
+            if (!updateBook) {
+                throw new expectationFailedError("book not found") 
+            } 
+            console.log(updateBook)
+            return updateBook
+            
+        } catch (err) {
+            console.log(err)
+            return err
+        }
+        
+    }
+    
+    try {
+       
+        if (imageExist.img.imgId !== "" || imageExist.img.imgLink !== "") {
+    
+            let uploadedImg = await uploader.upload( image.tempFilePath, {public_id:  imageExist.img.imgId} )
+            
+           return await updateImage(uploadedImg.public_id ,uploadedImg.url)
+        } else {
+            let uploadedImg = await uploader.upload( image.tempFilePath )
+            
+            return await updateImage( uploadedImg.public_id, uploadedImg.url )
+        }
+    
+    } catch (err) {
+         throw new conflictError(`unable to upload image, ${err.message}`)
+    }
+
+}
+
+//add multiple books at once using csv file
+export const bulkBookUpload = async (authorid: string, payload: {[key: string]: any}[] ) => {
+
+    try {
+        
+        let allDocuments = [] 
+
+        for ( let i = 0; i < payload.length; i++) {
+            let document = payload[i]
+
+            let bookExist = await book.findOne({bookTitle: document.bookTitle, authorId: authorid})
+
+            if ( bookExist ) {
+
+                throw new conflictError(`book named ${document.bookTitle} already exists`)
+            }
+
+            allDocuments.push({
+                authorId: authorid,
+                bookTitle: document.bookTitle,
+                description: document.description,
+                category: document.category,
+                currency: "#",
+                price: parseFloat(document.price),
+                discountPrice: parseFloat(document.discountPrice || 0),
+                status: document.status,
+                recommended: Boolean( document.recommended ) ,
+                categoryType: document.categoryType
+            })
+        }
+
+        const addBooks = await book.insertMany(allDocuments)
+
+        return addBooks
+    } catch (err) {
+        return err
+    }
+}
+
+
+//get one book and get plenty books
+//pagination and go to next page
 //add ratings by swot on books
-//rate limiting and session to login
+//rate limiting and session to login on multiple devices

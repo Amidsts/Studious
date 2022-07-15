@@ -54,3 +54,27 @@ export class conflictError extends baseError {
  
   }
 }
+
+export class requestTimeoutError extends baseError {
+  constructor ( err?: {[key : string]: any} | string  ) {
+  super();
+  this.success = false,
+  this.errorName = "conflict",
+  this.httpStatusCode = 408,
+  this.errMessage = err,
+  this.data = {}
+ 
+  }
+}
+
+export class expectationFailedError extends baseError {
+  constructor ( err?: {[key : string]: any} | string  ) {
+  super();
+  this.success = false,
+  this.errorName = "expectation Failed",
+  this.httpStatusCode = 417,
+  this.errMessage = err,
+  this.data = {}
+ 
+  }
+}

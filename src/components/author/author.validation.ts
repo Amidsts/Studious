@@ -33,14 +33,14 @@ export const passwordVerificationEmailValidation = (payload: { [key: string]: an
 export const passwordVerificationCodelValidation = (payload: { [key: string]: any} ) => {
 
     return validator(Joi.object({
-        code: Joi.string().email().trim().min(6).max(6).required()
+        code: Joi.string().trim().min(6).max(6).required()
     }), payload)
    
 }
 
 export const resetpasswordValidation = (payload: { [key: string]: any}) => {
     return validator(Joi.object({
-        code: Joi.string().email().trim().min(6).max(6).required(),
+        code: Joi.string().trim().min(6).max(6).required(),
         newPassword: Joi.string().trim().min(6).required(), 
         confirmPassword:Joi.string().trim().min(6).required()
     }), payload)
@@ -48,6 +48,7 @@ export const resetpasswordValidation = (payload: { [key: string]: any}) => {
 }
 
 export const changePasswordValidation = (payload: { [key: string]: any}) => {
+
     return validator(Joi.object({
         oldPassword: Joi.string().trim().min(6).required(), 
         newPassword: Joi.string().trim().min(6).required(), 
@@ -67,3 +68,15 @@ export const addbookValidation = ( payload: { [key: string]: any}) => {
         
     }), payload )
 } 
+
+// export const bulkbooksValidation = ( payload: { [key: string]: any}[]) => {
+//     return validator( Joi.array().items( Joi.object({
+//         bookTitle: Joi.string().required(),
+//         description : Joi.string().required(),
+//         category: Joi.string().required(),
+//         price: Joi.number().required().validate(price, ),
+//         status: Joi.string().required(),
+//         recommended: Joi.boolean().required(),
+//         'category type': Joi.string().required(),
+//     }) ), payload )
+// }

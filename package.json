@@ -30,6 +30,7 @@
     "@types/passport": "^1.0.9",
     "@types/redis": "^4.0.11",
     "cloudinary": "^1.30.0",
+    "csv-parser": "^3.0.0",
     "datauri": "^4.1.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",

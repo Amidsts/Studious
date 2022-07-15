@@ -19,7 +19,8 @@ export const validator = ( schema: { [key: string] : any }, inputObject: { [key:
     const {error, value} = validation
  
     if (error) {
-        throw new badRequestError(error)
+        console.log(error)
+        throw new badRequestError(` ${value} ${error.message}`)
     }
     return value ;
  }

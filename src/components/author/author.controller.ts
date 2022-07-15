@@ -1,20 +1,18 @@
-import {NextFunction, Request, Response} from "express"
-import fileUpload, { UploadedFile } from "express-fileupload"
-import path from "path"
+import {NextFunction, request, Request, Response} from "express"
+import {UploadedFile} from "express-fileupload"
+import fs from "fs" ;
+import csv from "csv-parser"
 
-import * as adminService from "../author/author.service"
+// import { csvParser } from "../../utils/files"
+import * as authorService from "../author/author.service"
 import {responseHandler} from "../../helpers/general"
-import { uploader } from "../../config/cloudinary.config"
-// import {limitWrongPassword} from "../../middlewares/ratelimiter"
-// import dataUri from "datauri"
+import { expectationFailedError } from "../../helpers/errors"
 
-// import fs from "fs"
-// import {Readable} from "stream"
 
 export const signUpAuthor = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const response = await adminService.signupAuthor(req.body)
+        const response = await authorService.signupAuthor(req.body)
          res.json(responseHandler(response))
     } catch (error) {
         res.json(error)
@@ -26,7 +24,7 @@ export const signInAuthor = async (req: Request, res: Response, next: NextFuncti
     
     try {
         // limitWrongPassword(req, res) 
-        const response = await adminService.signinAuthor(req.body, res)
+        const response = await authorService.signinAuthor(req.body, res)
         
          res.json(responseHandler(response))
     } catch (error) {
@@ -40,7 +38,7 @@ export const forgotPasswordEmail = async (req: Request, res: Response, next: Nex
     
     try {
         
-        const response = await adminService.passwordVerificationEmail(req.body.email)
+        const response = await authorService.passwordVerificationEmail(req.body)
         
          res.json(responseHandler(response))
     } catch (error) {
@@ -54,7 +52,7 @@ export const passwordVerificationCode = async (req: Request, res: Response, next
     
     try {
        
-        const response = await adminService.enterPasswordVerificationCode(req.body)
+        const response = await authorService.enterPasswordVerificationCode(req.body)
          
          res.json(responseHandler(response))
     } catch (error) {
@@ -68,7 +66,7 @@ export const resendPasswordVerificationCode = async (req: Request, res: Response
     
     try {
        
-        const response = await adminService.resendVerificationCode()
+        const response = await authorService.resendVerificationCode()
          
          res.json(responseHandler(response))
     } catch (error) {
@@ -82,7 +80,7 @@ export const resetpassword = async (req: Request, res: Response, next: NextFunct
     
     try {
        
-        const response = await adminService.resetPassword(req.body, req.params.authorId)
+        const response = await authorService.resetPassword(req.body, req.params.authorId)
          
          res.json(responseHandler(response))
     } catch (error) {
@@ -96,7 +94,7 @@ export const changepassword = async (req: Request, res: Response, next: NextFunc
     
     try {
        
-        const response = await adminService.changePassword(req.body, req.params.authorId)
+        const response = await authorService.changePassword(req.body, req.params.authorId)
          
          res.json(responseHandler(response))
     } catch (error) {
@@ -106,23 +104,52 @@ export const changepassword = async (req: Request, res: Response, next: NextFunc
    
 }
 
-export const uploadImage = async (req: Request, res, next: NextFunction) => {
+export const addBook = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+
+        const response = await authorService.addbook(req.body, req.params.authorid)
+        res.json(responseHandler(response))
+    } catch (error) {
+        res.json(error) 
+        next(error)
+    }
+}
+
+export const uploadImage = async (req: Request, res, next: NextFunction) => { 
+
+    try {
+        if (!req.files) {
+            throw new expectationFailedError("select a file")
+            // return
+            
+        }
+        const response =await authorService.addImage(req.files.img, req.params.bookId)
+
+        res.json(responseHandler(response)) 
+    } catch (error) {
+        res.json(error) 
+        next(error)
+    }
+   
+} 
+
+
+export const bulkBooksUpload = async (req: Request, res, next: NextFunction) => { 
 
     try {
 
-        if (!req.files) {
-            return res.status(400).send("No files were uploaded.");
-            
-          }
-        const image  = (req.files.img) as UploadedFile
-        const Path = path.join(__dirname, `../../upload/${image.name}`)
-        
-        uploader.upload(image.tempFilePath).then((result) => {
-            res.json(result)
-        }).catch(error => {
-            console.log(`some ${error}`)
-        })
-   
+        const results = []
+    //upload csv file to temporary file path and get file path
+    let filepath = ( (req.files.csvfile) as UploadedFile).tempFilePath
+    //read csv file in bit/chunk and pass the content to a writeable csv()
+    let readFile = fs.createReadStream(filepath).pipe(csv())
+    .on("data", (data) => {
+        results.push(data)
+    })
+    .on("end", async () => {
+        const response = await authorService.bulkBookUpload(req.params.authorId, results)
+        return res.json(responseHandler(response))
+    })
     } catch (error) {
         res.json(error) 
         next(error)

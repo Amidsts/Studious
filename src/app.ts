@@ -24,7 +24,7 @@ const main = async () => {
         abortOnLimit: true, // abort when file size exceed limits
         // createParentPath: true
         useTempFiles : true,
-        tempFileDir : path.join(__dirname, "../../upload"),
+        tempFileDir : path.join(__dirname, "./upload"),
         
     }));
 
@@ -39,8 +39,8 @@ const main = async () => {
     // })
 
     //connect redis
-
     connectRedis()
+
     //connect to database
     connectDb(); 
      

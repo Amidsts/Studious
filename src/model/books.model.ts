@@ -9,7 +9,7 @@ export interface IBooks {
     price: number;
     discountPrice: number; 
     // recommendedBooks: { id: number, name: string, price: number }[];
-    bookSwot?: {
+    bookSwots?: {
         type:string,
         ref: string
     }[]         //array of people that have purchase the book
@@ -38,18 +38,16 @@ const bookSchema = new Schema({
         required: true
     },
     currency: [{
-        type: String, 
-        required: true
+        type: String
     }],
     price: {
         type: Number, 
         required: true
     },
     discountPrice: {
-        type: String, 
-        required: true
+        type: String
     },
-    bookSwot: [{
+    bookSwots: [{
         type: String,
     }],
     status:{
@@ -57,11 +55,17 @@ const bookSchema = new Schema({
         required:true
     },
     img: {
-        type: String, 
-        required: true
+        imgId : {
+            type :  String,
+            default: ""
+        },
+        imgLink :  {
+            type :  String,
+            default: ""
+        } 
     },
     recommended:{
-        type: String,
+        type: Boolean
     },
    ratings: {
         type: Number,
@@ -69,7 +73,7 @@ const bookSchema = new Schema({
     },
     categoryType:{
         type: String,
-        enum: ['Religion' ,'Romantic' ,'mystery'],
+        enum: ['religion' ,'romance' ,'mystery'],
         required:true
     }
 },{timestamps: true})
