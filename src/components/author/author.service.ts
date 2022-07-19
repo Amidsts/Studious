@@ -250,6 +250,7 @@ export const addbook  = async (payload: {[key: string] : any}, authorid: string)
 
 }
 
+//add book image
 export const addImage = async (imgFile, bookId) => {
     // const Path = path.join(__dirname, `../../upload/${image.name}`)
     const imageExist = await book.findOne({_id: bookId})
@@ -332,7 +333,35 @@ export const bulkBookUpload = async (authorid: string, payload: {[key: string]: 
 }
 
 
-//get one book and get plenty books
-//pagination and go to next page
+//get plenty books
+export const books = async (offset: number, Limit: number, endIndex: number, next?: { [key: string] : number }, previous?: { [key: string] : number }) => {
+
+    let results : { [key : string] : any } =  {}
+
+   //count the number of books in the collection
+    const booksCount = await book.find().count()
+
+     //get books in ascending order, skip n documents, determine the number documents to return
+     const Books = await book.find().sort({_id : -1}).skip( offset ).limit(Limit).exec()
+
+    //if offset is less than or equal to zero, there should be no prvious page
+    if ( offset > 0 ) {
+        results.previousPage = previous
+    }
+
+    //check if the endIndex is not greater than the documents number
+    if ( endIndex < booksCount ) {
+        results.nextPage = next
+    }  
+ 
+    results.Books = Books 
+
+    return results
+
+} 
+
+//get one book and 
+//comment my code
+//upload project to production, heroku and aws
 //add ratings by swot on books
-//rate limiting and session to login on multiple devices
+//password rate limiting and session to login on multiple devices

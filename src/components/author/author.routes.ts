@@ -1,7 +1,8 @@
 import { Router , Request, Response} from "express"
 
 import * as authorController from "./author.controller"
-import { validateAuthor } from "../../helpers/auth";
+import { validateAuthor } from "../../middlewares/auth";
+import { pagination } from "../../middlewares/pagination";
 
 const router = Router() ;
 
@@ -16,11 +17,11 @@ router.post("/resetPassword/:authorId", authorController.resetpassword)
 
 //protected APIs
 router.post("/changePassword/:authorId", validateAuthor, authorController.changepassword)
-
 router.post("/uploadBook/:authorid",authorController.addBook)
 
-router.post("/:bookId/uploadImage", authorController.uploadImage)
-
+router.post( "/:bookId/uploadImage", authorController.uploadImage )
 router.post("/:authorId/bulkUpload", authorController.bulkBooksUpload)
 
+router.get("/books", pagination, authorController.getBooks)
+ 
 export default router ;

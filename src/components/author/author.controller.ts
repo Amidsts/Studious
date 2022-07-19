@@ -156,3 +156,21 @@ export const bulkBooksUpload = async (req: Request, res, next: NextFunction) => 
     }
    
 } 
+
+//get books
+
+export const getBooks = async (req: Request, res, next: NextFunction) => { 
+
+    try {
+        let {paginate} = res.locals
+
+        const response = await authorService.books(paginate.startIndex, paginate.limit, paginate.endIndex, paginate.next, paginate.previous)
+
+        return res.json(responseHandler(response))
+
+    } catch (error) {
+        res.json(error)  
+        next(error) 
+    }
+   
+}  

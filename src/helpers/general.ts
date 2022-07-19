@@ -24,3 +24,4 @@ export const generateVerificationCode = () => {
     let token = 100000 + ( Math.floor(Math.random() * 100000) )
     return token
 }
+
