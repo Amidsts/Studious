@@ -16,6 +16,13 @@ export enum adminstatusENUM {
     DISABLED = "disabled"
 } 
 
+export enum adminRoleENUM {
+    ACTIVE ="active",
+    INACTIVE = "inactive",
+    SUSPENDED = "suspended",
+    DISABLED = "disabled"
+} 
+
 //books
 export enum bookStatusENUM {
     AVAILABLE ='available',
@@ -23,4 +30,4 @@ export enum bookStatusENUM {
 }
 
 // UNION TYPES
-export type roleTYPES = "admin" | "author" | "swot"
+export type roleTYPES =  "author" | "swot"

@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express"
 
 
 export const pagination = (req: Request, res: Response, next: NextFunction) => {
+    
     //page: number of each page
     //limit : no of data returned per page
     //startIndex determines where to start returning documents from
@@ -16,11 +17,7 @@ export const pagination = (req: Request, res: Response, next: NextFunction) => {
 
     if( !page || page <= 0 ) page = 1
 
-    if ( !limit || limit > maxLimit ) limit = maxLimit 
-
-    // let res.locals.pagination = {}
-    // let paginate : any = {}
-   
+    if ( !limit || limit > maxLimit ) limit = maxLimit  
 
     res.locals.paginate.page = page
     res.locals.paginate.limit = limit

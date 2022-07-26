@@ -1,7 +1,7 @@
 import {
     authorizationError, conflictError, notFoundError,expectationFailedError, badRequestError
 } from "../../helpers/errors"
-import { Admin } from "./admin.model"
+import { Admin } from "./swot.model"
 import adminAccess from "../authModel/auth.admin.model"
 import {  
     signUpAdminValidate,
@@ -10,7 +10,7 @@ import {
     adminForgetPasswordCodeValidate,
     adminresetPasswordValidate,
     adminchangePasswordValidate
-} from "./admin.validate"
+} from "./swot.validate"
 // import { date } from "joi"
 import { checkHash, hashpassword } from "../../helpers/general"
 import { generateToken } from "../../utils/auth"

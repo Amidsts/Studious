@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express"
-import * as adminService from "./admin.service"
+import * as adminService from "./swot.service"
 import {responseHandler} from "../../helpers/general"
 // import { pagination } from "../../middlewares/pagination"
 

@@ -1,6 +1,6 @@
 import {Router, Request, response} from "express" 
 
-import * as adminController from "./admin.controller"
+import * as adminController from "./swot.controller"
 import { validateAdmin } from "../../middlewares/auth";
 import { pagination } from "../../middlewares/pagination";
 
@@ -19,7 +19,5 @@ router.post("/changePassword/:adminId", validateAdmin, adminController.changePas
 router.get("/Authors", validateAdmin, pagination, adminController.getAuthors)
 router.get("/author", validateAdmin,  adminController.getauthor)
 
-
-//role base authentication from jwt
 
 export default router

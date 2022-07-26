@@ -1,15 +1,16 @@
 import { badRequestError } from "../helpers/errors";
 
-export const generateVerificationCode = async () => {
-    const characters = "0123456789abcdefghijklmnoprstuvwxyz" 
+export const generateVerificationCode = () => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnoprstuvwxyz" 
 
     let verificationCode = "" ;
 
-    for (let i = 0; i < characters.length; i++) {
+    for (let i = 0; i < 6; i++) {
         const code =  characters[Math.floor(Math.random() * characters.length)] ;
         verificationCode += code ;
     }
     console.log(`verification code is ${verificationCode}`)
+    return verificationCode
 } 
 
 

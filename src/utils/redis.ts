@@ -35,9 +35,8 @@ export const connectRedis = async () => {
 
     try {
         // console.log('redis key retrieved!')
-        const g = await redis.get(key)
-        console.log(g)
-       return g
+        return await redis.get(key)
+       
      } catch (err) {
     
         console.log(`redis key failed to set error here ${err}`)

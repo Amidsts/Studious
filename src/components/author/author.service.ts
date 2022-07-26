@@ -21,10 +21,11 @@ import {
     } from "./author.validation"
 import book from "../../model/books.model"
 import { consecutivefailedPassword } from "../../middlewares/ratelimiter"
-import {generateVerificationCode} from "../../helpers/general"
+import {generateVerificationCode} from "../../utils/general"
 import {SETEX, GET, DEL} from "../../utils/redis"
 import author from "./author.model"
 import {uploader} from "../../config/cloudinary.config"
+import { roleTYPES } from "../../helpers/custom"
 
 import { Request, Response } from "express"
 import fileUpload, {UploadedFile} from "express-fileupload"
@@ -112,7 +113,7 @@ export const signinAuthor = async (payload: { [key:string] : any}, res: Response
         throw new badRequestError("account is disabled, suspended or inactive")   
     }  
 
-    const Token = generateToken({id:authorExist._id, status :authorExist.status})
+    const Token = generateToken({id:authorExist._id, status :authorExist.status, role: authorSecret.role})
 
     return {
         name : authorExist.firstName + " " + authorExist.lastName,

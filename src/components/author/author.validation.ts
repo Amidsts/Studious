@@ -33,7 +33,7 @@ export const passwordVerificationEmailValidation = (payload: { [key: string]: an
 export const passwordVerificationCodelValidation = (payload: { [key: string]: any} ) => {
 
     return validator(Joi.object({
-        code: Joi.string().trim().min(6).max(6).required()
+        code: Joi.string().alphanum().trim().length(6).required()
     }), payload)
    
 }

@@ -12,7 +12,7 @@ export interface IAuthorAccess {
 const authorAccessSchema =  new Schema({
     author : {
         type: Schema.Types.ObjectId,
-        ref: "admin"
+        ref: "author"
     },
     password : {
         type: String,
