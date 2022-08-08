@@ -1,16 +1,16 @@
 import { Schema, model, Types } from "mongoose";
 
-export interface IAdminAuth {
-    adminId: Types.ObjectId,
+export interface ISwotAuth {
+    swotId: Types.ObjectId,
     password: string;
     lastLoggedIn: Date;
-    role: string
+    isLoggedIn: boolean
 }
 
 const adminAuthSchema =  new Schema({
     adminId : {
         type: Schema.Types.ObjectId,
-        ref: "admin"
+        ref: "swot"
     },
     password:{
         type: String,
@@ -20,14 +20,10 @@ const adminAuthSchema =  new Schema({
     },
     lastLoggedIn: {
         type: Date
-    },
-    role : {
-        type: String,
-        default: "admin"
     }
     
 }, {timestamps: true})
 
-const adminAccess = model<IAdminAuth>("adminauth", adminAuthSchema)
+const swotAccess = model<ISwotAuth>("swotauth", adminAuthSchema)
 
-export default adminAccess
+export default swotAccess

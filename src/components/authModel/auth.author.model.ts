@@ -1,12 +1,11 @@
 import { Schema, model, Types } from "mongoose";
-import { roleTYPES } from "../../helpers/custom";
 
 export interface IAuthorAccess {
     author: Types.ObjectId,
     password: string;
     lastLogin: Date;
-    isLoggedIn: Boolean;
-    role: roleTYPES[] 
+    isLoggedIn: boolean;
+    role: string
 }
 
 const authorAccessSchema =  new Schema({
@@ -24,7 +23,10 @@ const authorAccessSchema =  new Schema({
         required: true,
         default: false
     },
-    role : [String]
+    role : {
+        type: String,
+        default: "author"
+    }
     
 }, {timestamps: true})
 

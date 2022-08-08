@@ -1,9 +1,134 @@
-API lists
-    SWOT MODEL
-        name, email,password, phone number,  books purchased, 
+        BOOK STORE SCHEMA ARCHITECTURE / DATA MODELLING
 
-    ORDER MODEL
-         cart id, deliveryLocation, delivery fee, delivery phone number, order date, payment Mode, transactionId, status
+    BOOKS {
+        authorId,
+        bookTitle,
+        description,
+        category,
+        currency,
+        price,
+        discountPrice, 
+        bookSwots: {
+            type,
+            ref,
+        }[]         //array of people that have purchase the book
+        status,
+        bookImg,
+        recommended,
+        ratings,
+        reviews,
+        categoryType,
+        couponCode,
+        Invoice
+    }
 
-    CART MODEL
-         authorId, swotId, bookId, orderDate, transaction Date, array of ordered books, book quantity, customerId
+    ADMIN {
+        firstName,
+        lastName,
+        phone?,
+        email,
+        status,
+        adminId,
+        password,
+        lastLoggedIn,
+        role,
+    }
+
+    AUTHOR{
+        firstName,
+        lastName,
+        gender,
+        email,
+        status,
+        aboutAuthor,
+        address: {
+            country,
+            state,
+            city,
+            localGovt,
+            postalCode,
+        
+        };
+        booksPublished: {
+            type,
+            ref,
+        }[],
+        walletId
+    }
+
+    SALES_REP : {
+        firstName,
+        lastName,
+        phone?,
+        email,
+        status,
+        password,
+        lastLoggedIn,
+        openedAt, //time
+        closedAt, //time
+        openingDays,
+        closingDays,
+        storeAddress: {
+            country,
+            state,
+            city,
+            localGovt,
+            postalCode,
+        },
+        commentsReceived,
+        walletId
+    }
+
+    SWOT MODEL {
+        name,
+        email,
+        password, 
+        phone number,
+        books purchased, //array of books
+        referralLink,
+        referredSwot: [ Ids ], // id of swots reffered
+        referredBy,
+        referralBonus,
+        commentsMade,
+        status
+    }
+         
+    CART MODEL{
+        salesRepId, 
+        swotId, 
+        books: [ 
+            {
+                bookId,
+                books_quantity,
+                Price
+            }
+        ],  //array of ordered books Id
+        totalPrice, 
+
+    }
+
+    ORDER MODEL{
+        cart id, 
+        deliveryLocation, 
+        delivery fee, 
+        delivery phone number, 
+        order date,
+        cartItemsPrice,
+        payment Mode, 
+        transactionId, 
+        orderStatus
+    }
+    
+    TRANSACTION{
+        transaction Date,
+        transaction details,
+        transactionStatus
+    }
+
+    DELIVERYMAN {
+
+    }
+
+    WALLET
+
+    COMMENTS

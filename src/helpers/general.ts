@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from "bcrypt"
 
 export const responseHandler = (payload: any, message = "success"): any => {
@@ -21,7 +22,7 @@ export const checkHash = (plainPassword: string, hashedPassword: string) => {
 //generate 6 digit Code
 export const generateVerificationCode = () => {
 
-    let token = 100000 + ( Math.floor(Math.random() * 100000) )
+    const token = 100000 + ( Math.floor(Math.random() * 100000) )
     return token
 }
 

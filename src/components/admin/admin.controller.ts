@@ -97,7 +97,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
 export const getAuthors = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        let {paginate} = res.locals
+        const {paginate} = res.locals
 
         const response = await adminService.getAuthors(paginate.startIndex, paginate.limit,paginate.endIndex, paginate.next, paginate.prev)
         
@@ -112,7 +112,6 @@ export const getAuthors = async (req: Request, res: Response, next: NextFunction
 export const getauthor = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const { paginate } = res.locals
         const response = await adminService.getAuthor(req.params.authorId)
         
          res.json(responseHandler(response))

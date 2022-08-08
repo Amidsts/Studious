@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Author from "./author.model"
 import { generateToken } from "../../utils/auth"
-import {adminstatusENUM, bookStatusENUM} from "../../helpers/custom"
+// import {adminstatusENUM, bookStatusENUM} from "../../helpers/custom"
 import authorAccess from "../authModel/auth.author.model"
 import { hashpassword, checkHash } from "../../helpers/general"
 import {
@@ -16,27 +17,20 @@ import {
         passwordVerificationEmailValidation,
         passwordVerificationCodelValidation,
         resetpasswordValidation,
-        changePasswordValidation, 
-        addbookValidation
+        changePasswordValidation
     } from "./author.validation"
-import book from "../../model/books.model"
-import { consecutivefailedPassword } from "../../middlewares/ratelimiter"
+import book from "../books/books.model"
 import {generateVerificationCode} from "../../utils/general"
 import {SETEX, GET, DEL} from "../../utils/redis"
-import author from "./author.model"
 import {uploader} from "../../config/cloudinary.config"
-import { roleTYPES } from "../../helpers/custom"
-
-import { Request, Response } from "express"
-import fileUpload, {UploadedFile} from "express-fileupload"
-import path from "path"
+import {UploadedFile} from "express-fileupload"
 
 
 export const signupAuthor = async(
-    payload: { [ key : string ]: any }
+    payload: Record<string, string | number>
 ) => {
         
-   const {firstName, lastName, gender, email, status,
+   const {firstName, lastName, gender, email,
     aboutAuthor, country, state, city, localGovt, postalCode, password} = signUpAuthorValidation(payload)
 
     try {
@@ -54,11 +48,11 @@ export const signupAuthor = async(
             lastName,
             gender,
             email,
-            status: adminstatusENUM.ACTIVE,
+            status: "active",
             aboutAuthor,
             address: {
                 country,
-                state,
+                state, 
                 city,
                 localGovt,
                 postalCode
@@ -69,7 +63,7 @@ export const signupAuthor = async(
             author: newauthor._id,
             password: hashedPassword,
             lastLogin: (new Date()).toUTCString(),
-            role : ["author"]
+            role : "author"
         }).save() 
 
         //send signUp mail
@@ -80,7 +74,7 @@ export const signupAuthor = async(
     }
 }
 
-export const signinAuthor = async (payload: { [key:string] : any}, res: Response) => {
+export const signinAuthor = async (payload: Record<string, string | number>) => {
     const {email, password} = signInAuthorValidation(payload)
     
     const authorExist  = await Author.findOne({email})
@@ -88,13 +82,11 @@ export const signinAuthor = async (payload: { [key:string] : any}, res: Response
         throw new notFoundError("invalid email or passsword")
     }
 
-    const authorSecret =( await authorAccess.findOne({ author : authorExist._id}) )
+    const authorSecret = await authorAccess.findOne({ author : authorExist._id}) 
 
-    // console.log(authorSecret)
     const comparePassword = checkHash(password, authorSecret.password)
-    
 
-    const isLoggedIn = authorSecret.isLoggedIn
+    // const isLoggedIn = authorSecret.isLoggedIn
 
     //use this for now
     if (comparePassword) {
@@ -109,7 +101,7 @@ export const signinAuthor = async (payload: { [key:string] : any}, res: Response
         throw new notFoundError("invalid email or passsword")
     } 
  
-    if (authorExist.status !== adminstatusENUM.ACTIVE) {
+    if (authorExist.status !== "active") {
         throw new badRequestError("account is disabled, suspended or inactive")   
     }  
 
@@ -125,7 +117,7 @@ export const signinAuthor = async (payload: { [key:string] : any}, res: Response
 //unprotected routes
 //forgot password
 //verify email route
-export const passwordVerificationEmail = async ( payload: { [key: string]: any} ) => {
+export const passwordVerificationEmail = async ( payload: Record<string, string | number> ) => {
     const {email} = passwordVerificationEmailValidation(payload)
     const emailExist = await Author.findOne({ email})
     if (!emailExist) {
@@ -143,7 +135,7 @@ export const passwordVerificationEmail = async ( payload: { [key: string]: any} 
 } 
 
 //supply verificattion code and verify verificattion code
-export const enterPasswordVerificationCode = async (payload: { [key: string]: any}) => {
+export const enterPasswordVerificationCode = async (payload: Record<string, string | number>) => {
 
     const {code} = passwordVerificationCodelValidation(payload)
 
@@ -165,24 +157,24 @@ export const resendVerificationCode = async () => {
 }
 
 //reset password
-export const resetPassword = async (payload: {[key: string] : any}, authorId: string) => {
-    const {code, newPassword, confirmPassword} = resetpasswordValidation(payload)
+export const resetPassword = async (payload: Record<string, string | number>) => {
+    const {email,code, newPassword, confirmPassword} = resetpasswordValidation(payload)
 
     if ( newPassword !== confirmPassword) {
         throw new badRequestError("password must be the same")
     }
 
-   const author = await Author.findOne({_id : authorId})
+   const author = await Author.findOne({email})
 
-   if (!author){
+   if (!author){ 
     throw new conflictError("there is a problem, pls try again")
    }
 
-   const authoraccess = await authorAccess.updateOne({author: authorId} , {password : newPassword})
+   const authoraccess = await authorAccess.updateOne({author: author._id} , {password : newPassword})
 
     if (!authoraccess) {
         throw new expectationFailedError("unable to update password for some reason, pls try again")
-    };
+    }
 
     await DEL(`authorVerificationcode_${code}`) 
 
@@ -192,7 +184,7 @@ export const resetPassword = async (payload: {[key: string] : any}, authorId: st
 
 //protected route continues
 //change password while online
-export const changePassword = async (payload : {[key: string] : any}, authorId) => {
+export const changePassword = async (payload : Record<string, string | number>, authorId) => {
     const {oldPassword, newPassword, confirmPassword} = changePasswordValidation(payload)
 
     const authoraccessCheck = await authorAccess.findOne({ author: authorId })
@@ -224,7 +216,7 @@ export const changePassword = async (payload : {[key: string] : any}, authorId) 
 
 
 // author add one book
-export const addbook  = async (payload: {[key: string] : any}, authorid: string) => {
+export const addbook  = async (payload: Record<string, string | number>, authorid: string) => {
 
     const bookExist = await book.findOne({bookTitle: payload.bookTitle, authorId: authorid})
 
@@ -243,7 +235,7 @@ export const addbook  = async (payload: {[key: string] : any}, authorid: string)
         price : payload.price,
         discountPrice:payload.discountPrice,
         bookSwot: payload.bookSwot,
-        status: bookStatusENUM.AVAILABLE,
+        status: "available",
         categoryType : payload.categoryType
     }).save()
 
@@ -279,11 +271,11 @@ export const addImage = async (imgFile, bookId) => {
        
         if (imageExist.img.imgId !== "" || imageExist.img.imgLink !== "") {
     
-            let uploadedImg = await uploader.upload( image.tempFilePath, {public_id:  imageExist.img.imgId} )
+            const uploadedImg = await uploader.upload( image.tempFilePath, {public_id:  imageExist.img.imgId} )
             
            return await updateImage(uploadedImg.public_id ,uploadedImg.url)
         } else {
-            let uploadedImg = await uploader.upload( image.tempFilePath )
+            const uploadedImg = await uploader.upload( image.tempFilePath )
             
             return await updateImage( uploadedImg.public_id, uploadedImg.url )
         }
@@ -299,12 +291,12 @@ export const bulkBookUpload = async (authorid: string, payload: {[key: string]: 
 
     try {
         
-        let allDocuments = [] 
+        const allDocuments = [] 
 
         for ( let i = 0; i < payload.length; i++) {
-            let document = payload[i]
+            const document = payload[i]
 
-            let bookExist = await book.findOne({bookTitle: document.bookTitle, authorId: authorid})
+            const bookExist = await book.findOne({bookTitle: document.bookTitle, authorId: authorid})
 
             if ( bookExist ) {
 
@@ -335,9 +327,9 @@ export const bulkBookUpload = async (authorid: string, payload: {[key: string]: 
 
 
 //get plenty books
-export const books = async (offset: number, Limit: number, endIndex: number, next?: { [key: string] : number }, previous?: { [key: string] : number }) => {
+export const books = async (offset: number, Limit: number, endIndex: number, next?:  Record<string, string | number> , previous?: { [key: string]: any }) => {
 
-    let results : { [key : string] : any } =  {}
+    const results : { [key: string]: any } =  {}
 
    //count the number of books in the collection
     const booksCount = await book.find().count()

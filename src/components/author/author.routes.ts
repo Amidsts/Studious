@@ -1,4 +1,4 @@
-import { Router , Request, Response} from "express"
+import { Router } from "express"
 
 import * as authorController from "./author.controller"
 import { validateAuthor } from "../../middlewares/auth";
@@ -13,7 +13,7 @@ router.post("/signInAuthor", authorController.signInAuthor)
 router.post("/forgotPassword", authorController.forgotPasswordEmail)
 router.post("/enterPasswordVerificationCode", authorController.passwordVerificationCode)
 router.post("/resendPasswordVerificationCode", authorController.resendPasswordVerificationCode)
-router.post("/resetPassword/:authorId", authorController.resetpassword)
+router.post("/resetPassword", authorController.resetpassword)
 
 //protected APIs
 router.post("/changePassword/:authorId", validateAuthor, authorController.changepassword)
@@ -21,7 +21,7 @@ router.post("/uploadBook/:authorid",authorController.addBook)
 
 router.post( "/:bookId/uploadImage", authorController.uploadImage )
 router.post("/:authorId/bulkUpload", authorController.bulkBooksUpload)
-
+ 
 router.get("/books", pagination, authorController.getBooks)
  
 export default router ;

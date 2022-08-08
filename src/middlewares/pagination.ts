@@ -12,7 +12,8 @@ export const pagination = (req: Request, res: Response, next: NextFunction) => {
 
     const maxLimit = 10
 
-    let page = parseInt( req?.query?.page?.toString() )
+    //use optional 'chaining operator' ?. to prevent undefined
+    let page = parseInt( req?.query?.page.toString() )
     let limit = parseInt( req?.query?.limit?.toString() )
 
     if( !page || page <= 0 ) page = 1

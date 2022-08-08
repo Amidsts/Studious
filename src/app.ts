@@ -1,6 +1,4 @@
 import express from "express" ;
-import session from "express-session" 
-import {MongoClient} from "mongodb"
 import fileUpload from "express-fileupload";
 import path from "path"
 
@@ -10,8 +8,8 @@ import adminRoutes from "./components/admin/admin.routes"
 import authorRoutes from "./components/author/author.routes"
 // import userRoutes from "./components/user/user.routes"
 import bookRoutes from "./components/books/books.routes"
-import * as ENV from "./config/env"
-import {cloudCloudinary, uploader} from "./config/cloudinary.config"
+import {port} from "./config/env"
+import {cloudCloudinary} from "./config/cloudinary.config"
 import { connectRedis } from "./utils/redis";
 
 
@@ -30,7 +28,7 @@ const main = async () => {
 
     app.use("*", cloudCloudinary)
 
-    const myurl = 'mongodb://localhost:27017';
+    // const myurl = 'mongodb://localhost:27017';
  
     // MongoClient.connect(myurl, (err, client) => {
     //   if (err) return console.log(err)
@@ -55,9 +53,10 @@ const main = async () => {
     app.use("/v1/admin", adminRoutes)
     app.use("/v1/author", authorRoutes)
     app.use("/v1/Books", bookRoutes)
+
     
-    app.listen(ENV.port, () => {
-        console.log( `server is up and running on ${ENV.port}` )
+    app.listen(port, () => {
+        console.log( `server is up and running on ${port}` )
     })  
 }
  

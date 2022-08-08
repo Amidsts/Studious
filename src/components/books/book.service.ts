@@ -1,4 +1,4 @@
-import book, { IBooks } from "../../model/books.model";
+import book, { IBooks } from "./books.model";
 
 export const createBook = async ( payload: IBooks) => {
     const newBook = await new book({

@@ -18,9 +18,8 @@ import { generateVerificationCode } from "../../utils/general"
 import { DEL, GET, SETEX } from "../../utils/redis"
 import author from "../author/author.model"
 
-
 export const signUpAdmin = async(
-    payload: { [ key : string ]: any }
+    payload: Record<string, string | number> 
 ) => {
 
     const {firstName, lastName, phone, email, password} = signUpAdminValidate(payload)
@@ -41,7 +40,7 @@ export const signUpAdmin = async(
 
     const hashedPassword = hashpassword( password )
 
-    const newAdminAccess = await new adminAccess({
+     await new adminAccess({
         adminId: newAdmin._id,
         password:  hashedPassword,
         lastLoggedIn: (new Date()).toUTCString()
@@ -52,7 +51,7 @@ export const signUpAdmin = async(
     return newAdmin
 }
 
-export const signInAdmin = async (payload: { [ key : string ]: any }) => {
+export const signInAdmin = async (payload: Record<string, string | number>) => {
     const { email, password } = signInAdminValidate(payload)
 
     const adminExists = await Admin.findOne({ email })
@@ -83,7 +82,7 @@ export const signInAdmin = async (payload: { [ key : string ]: any }) => {
     }
 }
 
-export const forgetPassword = async ( payload: {[ key : string ]: any} ) => {
+export const forgetPassword = async ( payload: Record<string, string | number> ) => {
     const { email } = adminForgetPasswordValidate(payload)
 
     const adminExists = await Admin.findOne({ email })
@@ -99,7 +98,8 @@ export const forgetPassword = async ( payload: {[ key : string ]: any} ) => {
 }
 
 //supply verificationCode
-export const enterPasswordVerificationCode = async (payload: {[ key : string ]: any}) => {
+export const enterPasswordVerificationCode = async (payload: Record<string, string | number>) => {
+    
     const {code} = adminForgetPasswordCodeValidate(payload)
 
     const getCode = await GET(`admin password resetCode is: ${code}`)
@@ -116,7 +116,7 @@ export const resendverifiCationCode = async () => {
     return Code
 }
 
-export const resetPassword = async ( payload: {[ key : string ]: any}, adminId ) => {
+export const resetPassword = async ( payload: Record<string, string | number>, adminId ) => {
    const {code, newPassword, confirmPassword} = adminresetPasswordValidate(payload)
 
    if (newPassword !== confirmPassword) {
@@ -141,7 +141,7 @@ export const resetPassword = async ( payload: {[ key : string ]: any}, adminId )
 
 //protected route cont'd
 //change password while online
-export const changepassword = async ( payload: {[ key : string ]: any}, adminId ) => {
+export const changepassword = async ( payload: Record<string, string | number>, adminId ) => {
 
      //collect admin Id from jwtToken
    const adminSecret = await adminAccess.findOne({adminId: adminId})
@@ -167,8 +167,10 @@ export const changepassword = async ( payload: {[ key : string ]: any}, adminId 
     return "password has been changed successfully"
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getAuthors = async (page: number, Limit:number, endIndex: number, next: { [key: string] : any }, prev: { [key: string] : any }) => {
-    let result : { [key: string] : any } = {} ;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result : { [key: string] : any } = {} ;
 
     const authors =  await author.find().sort({_id: -1}).skip(page).limit(Limit).exec()
 

@@ -1,12 +1,17 @@
-import {Schema, model} from "mongoose" ;
-import { adminstatusENUM, adminRoleENUM } from "../../helpers/custom";
+import { string } from "joi";
+import {Schema, model, Types} from "mongoose" ;
 
-export interface IAdmin {
+export interface ISwot {
     firstName: string;
     lastName: string;
     phone?: string;
     email: string ;
-    status: adminstatusENUM ;
+    books_purchased:[ Types.ObjectId ],
+    status: "online" | "offline" | "suspended"| "active",
+    referralLink: string,
+    referredBy: string,
+    referralBonus: string,
+    commentsMade: Array<string>
 }
 
 const adminSchema = new Schema(
@@ -32,7 +37,29 @@ const adminSchema = new Schema(
             enum: ["active", "inactive"],
             default: "active"
         },
+        books_purchased: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "book"
+            }
+        ],
+        referralLink: {
+            type: String
+        },
+        referredBy: {
+            type: String
+        },
+        referralBonus: {
+            type: String
+        },
+        commentsMade: [
+            {
+                type: string
+            }
+        ]
     }, 
     {timestamps: true}
 )
-export const Admin = model<IAdmin>("admin", adminSchema) ;
+ const Swot = model<ISwot>("swot", adminSchema) ;
+
+ export default Swot

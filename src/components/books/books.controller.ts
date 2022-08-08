@@ -1,4 +1,4 @@
-import { RequestHandler, Request, Response, NextFunction } from "express"
+import { RequestHandler, Request, NextFunction } from "express"
 import * as booksService from "./book.service"
 
 
@@ -10,7 +10,7 @@ export const newBook: RequestHandler = async (req:Request, res, next: NextFuncti
             console.log("err")
         }
 
-        const book = await booksService.createBook
+         await booksService.createBook
     } catch (err) {
         next(err)
     }

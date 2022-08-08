@@ -1,23 +1,24 @@
-import {Router, Request, response} from "express" 
+import {Router} from "express" 
 
-import * as adminController from "./swot.controller"
-import { validateAdmin } from "../../middlewares/auth";
+import * as SwotController from "./swot.controller"
+import { validateSwot } from "../../middlewares/auth";
 import { pagination } from "../../middlewares/pagination";
 
 const router = Router() ;
 
-//add new admin
+//add new Swot
 
-router.post("/signUpAdmin", adminController.signupAdmin)
-router.post("/signInAdmin", adminController.signinAdmin)
-router.post("/forgetPassword", adminController.forgetpasswrd)
-router.post("/VerificationCode", adminController.enterverificationCode)
-router.post("/resendVerificationCode", adminController.resendPasswrdverificationCode)
-router.post("/resetPassword/:adminId", adminController.resetpassword) 
+router.post("/signUpSwot", SwotController.signupSwot)
+router.post("/signInSwot", SwotController.signinSwot)
+router.post("/forgetPassword", SwotController.forgetpasswrd)
+router.post("/VerificationCode", SwotController.enterverificationCode)
+router.post("/resendVerificationCode", SwotController.resendPasswrdverificationCode)
+router.post("/resetPassword/:SwotId", SwotController.resetpassword) 
 
-router.post("/changePassword/:adminId", validateAdmin, adminController.changePassword)
-router.get("/Authors", validateAdmin, pagination, adminController.getAuthors)
-router.get("/author", validateAdmin,  adminController.getauthor)
+router.post("/changePassword/:SwotId", validateSwot, SwotController.changePassword)
+router.get("/Books", validateSwot, pagination, SwotController.getbooks)
+router.get("/Book", validateSwot,  SwotController.getbook)
+router.get("/Books/:Category", validateSwot, pagination, SwotController.getbooksBycategory)
 
 
 export default router

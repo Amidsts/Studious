@@ -1,4 +1,4 @@
-import {NextFunction, request, Request, Response} from "express"
+import {NextFunction, Request, Response} from "express"
 import {UploadedFile} from "express-fileupload"
 import fs from "fs" ;
 import csv from "csv-parser"
@@ -24,7 +24,7 @@ export const signInAuthor = async (req: Request, res: Response, next: NextFuncti
     
     try {
         // limitWrongPassword(req, res) 
-        const response = await authorService.signinAuthor(req.body, res)
+        const response = await authorService.signinAuthor(req.body)
         
          res.json(responseHandler(response))
     } catch (error) {
@@ -80,7 +80,7 @@ export const resetpassword = async (req: Request, res: Response, next: NextFunct
     
     try {
        
-        const response = await authorService.resetPassword(req.body, req.params.authorId)
+        const response = await authorService.resetPassword(req.body)
          
          res.json(responseHandler(response))
     } catch (error) {
@@ -140,9 +140,9 @@ export const bulkBooksUpload = async (req: Request, res, next: NextFunction) => 
 
         const results = []
     //upload csv file to temporary file path and get file path
-    let filepath = ( (req.files.csvfile) as UploadedFile).tempFilePath
+    const filepath = ( (req.files.csvfile) as UploadedFile).tempFilePath
     //read csv file in bit/chunk and pass the content to a writeable csv()
-    let readFile = fs.createReadStream(filepath).pipe(csv())
+    fs.createReadStream(filepath).pipe(csv())
     .on("data", (data) => {
         results.push(data)
     })
@@ -162,7 +162,7 @@ export const bulkBooksUpload = async (req: Request, res, next: NextFunction) => 
 export const getBooks = async (req: Request, res, next: NextFunction) => { 
 
     try {
-        let {paginate} = res.locals
+        const {paginate} = res.locals
 
         const response = await authorService.books(paginate.startIndex, paginate.limit, paginate.endIndex, paginate.next, paginate.previous)
 

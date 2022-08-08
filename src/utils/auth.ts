@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import jwt from "jsonwebtoken"
 import * as ENV from "../config/env"
 
@@ -9,6 +11,12 @@ export const generateToken = (payload: { [key : string] : any }) => {
 export const verifyToken = (authorization: string) => {
 const [, token] = authorization.split("Bearer ")
 
-return jwt.verify(token, ENV.TOKEN)
+   // console.log()
+return {
+   verify: jwt.verify(token, ENV.TOKEN),
+   decode: jwt.decode(token)
+}
 
 }
+
+// export const decodeToken = 

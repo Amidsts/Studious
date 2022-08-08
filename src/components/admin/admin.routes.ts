@@ -1,4 +1,4 @@
-import {Router, Request, response} from "express" 
+import {Router} from "express" 
 
 import * as adminController from "./admin.controller"
 import { validateAdmin } from "../../middlewares/auth";
@@ -17,7 +17,7 @@ router.post("/resetPassword/:adminId", adminController.resetpassword)
 
 router.post("/changePassword/:adminId", validateAdmin, adminController.changePassword)
 router.get("/Authors", validateAdmin, pagination, adminController.getAuthors)
-router.get("/author", validateAdmin,  adminController.getauthor)
+router.get("/author/:authorId", validateAdmin,  adminController.getauthor) 
 
 
 //role base authentication from jwt

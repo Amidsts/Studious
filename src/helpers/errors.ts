@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // import {Response} from "express"
 
  class baseError extends Error{
   protected success: boolean
   protected errorName: string;
   protected httpStatusCode: number;
-  protected errMessage: {} | string;
+  protected errMessage: Record<string, unknown> | string;
   protected data: object;
  
 }

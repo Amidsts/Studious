@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Schema, model, Model} from "mongoose";
 
 export interface IBooks {
@@ -8,7 +9,6 @@ export interface IBooks {
     currency: string[];
     price: number;
     discountPrice: number; 
-    // recommendedBooks: { id: number, name: string, price: number }[];
     bookSwots?: {
         type:string,
         ref: string
@@ -17,6 +17,7 @@ export interface IBooks {
     img: { [key: string]: any };
     recommended: boolean;
     ratings: number;
+    reviews: Array<string>,
     categoryType: 'Religion' | 'Romantic' | 'mystery';
 }
 

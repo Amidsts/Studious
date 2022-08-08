@@ -1,12 +1,12 @@
 import {NextFunction, Request, Response} from "express"
-import * as adminService from "./swot.service"
+import * as SwotService from "./swot.service"
 import {responseHandler} from "../../helpers/general"
 // import { pagination } from "../../middlewares/pagination"
 
-export const signupAdmin = async (req: Request, res: Response, next: NextFunction) => {
+export const signupSwot = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.signUpAdmin(req.body)
+        const response = await SwotService.signUpSwot(req.body)
         
         return res.json(responseHandler(response))
     } catch (err) {
@@ -16,10 +16,10 @@ export const signupAdmin = async (req: Request, res: Response, next: NextFunctio
    
 }
 
-export const signinAdmin = async (req: Request, res: Response, next: NextFunction) => {
+export const signinSwot = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.signInAdmin(req.body)
+        const response = await SwotService.signInSwot(req.body)
         
         return res.json(responseHandler(response))
     } catch (err) {
@@ -32,7 +32,7 @@ export const signinAdmin = async (req: Request, res: Response, next: NextFunctio
 export const forgetpasswrd = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.forgetPassword(req.body)
+        const response = await SwotService.forgetPassword(req.body)
         
         return res.json(responseHandler(response))
     } catch (err) {
@@ -45,7 +45,7 @@ export const forgetpasswrd = async (req: Request, res: Response, next: NextFunct
 export const enterverificationCode = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.enterPasswordVerificationCode(req.body)
+        const response = await SwotService.enterPasswordVerificationCode(req.body)
         
         return res.json(responseHandler(response))
     } catch (err) {
@@ -58,7 +58,7 @@ export const enterverificationCode = async (req: Request, res: Response, next: N
 export const resendPasswrdverificationCode = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.resendverifiCationCode()
+        const response = await SwotService.resendverifiCationCode()
         
         return res.json(responseHandler(response))
     } catch (err) {
@@ -71,7 +71,7 @@ export const resendPasswrdverificationCode = async (req: Request, res: Response,
 export const resetpassword = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.resetPassword(req.body, req.params.adminId)
+        const response = await SwotService.resetPassword(req.body, req.params.SwotId)
         
          res.json(responseHandler(response))
     } catch (err) {
@@ -84,7 +84,7 @@ export const resetpassword = async (req: Request, res: Response, next: NextFunct
 export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const response = await adminService.changepassword(req.body, req.params.adminId)
+        const response = await SwotService.changepassword(req.body, req.params.SwotId)
         
          res.json(responseHandler(response))
     } catch (err) {
@@ -94,12 +94,12 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
    
 }
 
-export const getAuthors = async (req: Request, res: Response, next: NextFunction) => {
+export const getbooks = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        let {paginate} = res.locals
+        const {paginate} = res.locals
 
-        const response = await adminService.getAuthors(paginate.startIndex, paginate.limit,paginate.endIndex, paginate.next, paginate.prev)
+        const response = await SwotService.getBooks(paginate.startIndex, paginate.limit,paginate.endIndex, paginate.next, paginate.prev)
         
          res.json(responseHandler(response))
     } catch (err) { 
@@ -109,14 +109,28 @@ export const getAuthors = async (req: Request, res: Response, next: NextFunction
    
 }
 
-export const getauthor = async (req: Request, res: Response, next: NextFunction) => {
+export const getbook = async (req: Request, res: Response, next: NextFunction) => {
 
     try { 
-        const { paginate } = res.locals
-        const response = await adminService.getAuthor(req.params.authorId)
+        const response = await SwotService.getBook(req.params.bookId)
         
          res.json(responseHandler(response))
     } catch (err) {
+        res.json(err)
+        next(err)
+    }
+   
+}
+
+export const getbooksBycategory = async (req: Request, res: Response, next: NextFunction) => {
+
+    try { 
+        const {paginate} = res.locals
+
+        const response = await SwotService.getBooksByCategory(req.params.Category ,paginate.startIndex, paginate.limit,paginate.endIndex, paginate.next, paginate.prev)
+        
+         res.json(responseHandler(response))
+    } catch (err) { 
         res.json(err)
         next(err)
     }

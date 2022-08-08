@@ -1,4 +1,4 @@
-import cloudinary,{v2} from "cloudinary" 
+import {v2} from "cloudinary" 
 import { Request, Response, NextFunction } from "express"
 
 import * as ENV from "./env"

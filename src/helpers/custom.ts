@@ -1,27 +1,6 @@
-import {Request} from "express"
+
 
 export type statusType = "active" | "inactive" | "submitted" ;
-
-export interface IRequest extends Request {
-    booktitle: string,
-    bookauthor: string
-}
-
-//admin
-//ENUMS
-export enum adminstatusENUM {
-    ACTIVE ="active",
-    INACTIVE = "inactive",
-    SUSPENDED = "suspended",
-    DISABLED = "disabled"
-} 
-
-export enum adminRoleENUM {
-    ACTIVE ="active",
-    INACTIVE = "inactive",
-    SUSPENDED = "suspended",
-    DISABLED = "disabled"
-} 
 
 //books
 export enum bookStatusENUM {
@@ -29,5 +8,25 @@ export enum bookStatusENUM {
     SOLD_OUT = 'soldOut'
 }
 
+export enum statusENUM {
+    ACTIVE ="active",
+    INACTIVE = "inactive",
+    SUSPENDED = "suspended",
+    DISABLED = "disabled"
+} 
+
+//admin
+//ENUM
+
+// export enum adminRoleENUM {
+//     ACTIVE ="active",
+//     INACTIVE = "inactive",
+//     SUSPENDED = "suspended",
+//     DISABLED = "disabled"
+// } 
+
+
+
 // UNION TYPES
-export type roleTYPES =  "author" | "swot"
+// export type roleTYPES =  "author" | "swot"
+

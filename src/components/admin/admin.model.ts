@@ -1,12 +1,12 @@
 import {Schema, model} from "mongoose" ;
-import { adminstatusENUM, adminRoleENUM } from "../../helpers/custom";
 
 export interface IAdmin {
     firstName: string;
     lastName: string;
     phone?: string;
     email: string ;
-    status: adminstatusENUM ;
+    status: "active" | "inactive";
+
 }
 
 const adminSchema = new Schema(
@@ -31,7 +31,7 @@ const adminSchema = new Schema(
             type: String,
             enum: ["active", "inactive"],
             default: "active"
-        },
+        }
     }, 
     {timestamps: true}
 )

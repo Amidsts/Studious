@@ -1,37 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     authorizationError, conflictError, notFoundError,expectationFailedError, badRequestError
 } from "../../helpers/errors"
-import { Admin } from "./swot.model"
-import adminAccess from "../authModel/auth.admin.model"
+import Swot from "./swot.model"
+import swotAccess from "../authModel/auth.swot.model"
 import {  
-    signUpAdminValidate,
-    signInAdminValidate,
-    adminForgetPasswordValidate,
-    adminForgetPasswordCodeValidate,
-    adminresetPasswordValidate,
-    adminchangePasswordValidate
+    signUpswotValidate,
+    signInswotValidate,
+    swotForgetPasswordValidate,
+    swotForgetPasswordCodeValidate,
+    swotresetPasswordValidate,
+    swotchangePasswordValidate
 } from "./swot.validate"
-// import { date } from "joi"
 import { checkHash, hashpassword } from "../../helpers/general"
 import { generateToken } from "../../utils/auth"
 import { generateVerificationCode } from "../../utils/general"
 import { DEL, GET, SETEX } from "../../utils/redis"
-import author from "../author/author.model"
+import book from "../books/books.model"
 
 
-export const signUpAdmin = async(
+export const signUpSwot = async(
     payload: { [ key : string ]: any }
 ) => {
 
-    const {firstName, lastName, phone, email, password} = signUpAdminValidate(payload)
+    const {firstName, lastName, phone, email, password} = signUpswotValidate(payload)
 
-    const adminExist = await Admin.findOne( { email })
+    const SwotExist = await Swot.findOne( { email })
 
-    if (adminExist) {
-        throw new authorizationError( "admin already exists" )
+    if (SwotExist) {
+        throw new authorizationError( "credentials already exists" )
     } 
 
-    const newAdmin = await new Admin({
+    const newSwot = await new Swot({
         firstName,
         lastName,
         phone,
@@ -41,58 +41,58 @@ export const signUpAdmin = async(
 
     const hashedPassword = hashpassword( password )
 
-    const newAdminAccess = await new adminAccess({
-        adminId: newAdmin._id,
+     await new swotAccess({
+        SwotId: newSwot._id,
         password:  hashedPassword,
         lastLoggedIn: (new Date()).toUTCString()
     }).save()
 
     //send signUp mail
-    // mailer(newAdmin.email)
-    return newAdmin
+    // mailer(newSwot.email)
+    return newSwot
 }
 
-export const signInAdmin = async (payload: { [ key : string ]: any }) => {
-    const { email, password } = signInAdminValidate(payload)
+export const signInSwot = async (payload: { [ key : string ]: any }) => {
+    const { email, password } = signInswotValidate(payload)
 
-    const adminExists = await Admin.findOne({ email })
+    const SwotExists = await Swot.findOne({ email })
 
-    if (!adminExists) {
+    if (!SwotExists) {
         throw new authorizationError("invalid credential")
     }
-    const adminSecret = await adminAccess.findOne({ adminId: adminExists._id})
-    if ( !adminSecret) {
+    const SwotSecret = await swotAccess.findOne({ SwotId: SwotExists._id})
+    if ( !SwotSecret) {
         throw new notFoundError("there is a problem try again")
     }
-    const comparePassword = checkHash(password,adminSecret.password )
+    const comparePassword = checkHash(password,SwotSecret.password )
 
     if (!comparePassword) {
         throw new authorizationError("invalid credential")
     }
 
     //generateToken 
-    const token = generateToken( {id:adminExists._id, Role:adminSecret.role } )
+    const token = generateToken( {id:SwotExists._id} )
 
-    await adminAccess.updateOne({
+    await swotAccess.updateOne({
         lastLoggedIn : ( new Date() ).toUTCString()
-    }) // update admin last logged in date
+    }) // update Swot last logged in date
 
     return {
-        adminExists,
+        SwotExists,
         Token : token
     }
 }
 
 export const forgetPassword = async ( payload: {[ key : string ]: any} ) => {
-    const { email } = adminForgetPasswordValidate(payload)
+    const { email } = swotForgetPasswordValidate(payload)
 
-    const adminExists = await Admin.findOne({ email })
-    if (!adminExists) {
+    const SwotExists = await Swot.findOne({ email })
+    if (!SwotExists) {
         throw new authorizationError("invalid credential")
     }
 
     const Code = generateVerificationCode()
-    await SETEX(`admin password resetCode is: ${Code}`, Code)
+    await SETEX(`Swot password resetCode is: ${Code}`, Code)
     return {
         code: Code
     }
@@ -100,9 +100,9 @@ export const forgetPassword = async ( payload: {[ key : string ]: any} ) => {
 
 //supply verificationCode
 export const enterPasswordVerificationCode = async (payload: {[ key : string ]: any}) => {
-    const {code} = adminForgetPasswordCodeValidate(payload)
+    const {code} = swotForgetPasswordCodeValidate(payload)
 
-    const getCode = await GET(`admin password resetCode is: ${code}`)
+    const getCode = await GET(`Swot password resetCode is: ${code}`)
 
     if (!getCode) {
         throw new notFoundError("verification code is invalid or has expired")
@@ -112,47 +112,47 @@ export const enterPasswordVerificationCode = async (payload: {[ key : string ]: 
 
 export const resendverifiCationCode = async () => {
     const Code = generateVerificationCode() 
-    await SETEX(`admin password resetCode is: ${Code}`, Code)
+    await SETEX(`Swot password resetCode is: ${Code}`, Code)
     return Code
 }
 
-export const resetPassword = async ( payload: {[ key : string ]: any}, adminId ) => {
-   const {code, newPassword, confirmPassword} = adminresetPasswordValidate(payload)
+export const resetPassword = async ( payload: {[ key : string ]: any}, SwotId ) => {
+   const {code, newPassword, confirmPassword} = swotresetPasswordValidate(payload)
 
    if (newPassword !== confirmPassword) {
        throw new conflictError("password must be same")
    }
-    const getAdmin = await Admin.findOne({_id: adminId})
-    if (!getAdmin) {
+    const getSwot = await Swot.findOne({_id: SwotId})
+    if (!getSwot) {
         throw new notFoundError("there is a problem please try again")
     }
 
     const hashedPassword = hashpassword(confirmPassword)
 
-    const resetpassword = await adminAccess.updateOne({adminId: adminId}, {password: hashedPassword})
+    const resetpassword = await swotAccess.updateOne({SwotId: SwotId}, {password: hashedPassword})
     if (!resetpassword) {
         throw new expectationFailedError("unable to update password for some reason, pls try again")
     }
 
-    DEL(`admin password resetCode is: ${code}`)
+    DEL(`Swot password resetCode is: ${code}`)
 
     return "password has been updated"
 }
 
 //protected route cont'd
 //change password while online
-export const changepassword = async ( payload: {[ key : string ]: any}, adminId ) => {
+export const changepassword = async ( payload: {[ key : string ]: any}, SwotId ) => {
 
-     //collect admin Id from jwtToken
-   const adminSecret = await adminAccess.findOne({adminId: adminId})
+     //collect Swot Id from jwtToken
+   const SwotSecret = await swotAccess.findOne({SwotId: SwotId})
 
-   if (!adminSecret) {
+   if (!SwotSecret) {
        throw new authorizationError("you are not authorized")
    }
-    const { oldPassword, newPassword, confirmPassword} = adminchangePasswordValidate(payload)
+    const { oldPassword, newPassword, confirmPassword} = swotchangePasswordValidate(payload)
 
     // const oldPwdExist = await 
-    const comparePassword = checkHash(oldPassword, adminSecret.password)
+    const comparePassword = checkHash(oldPassword, SwotSecret.password)
     
     if ( !comparePassword ) {
         throw new badRequestError("incorrect password")
@@ -163,23 +163,23 @@ export const changepassword = async ( payload: {[ key : string ]: any}, adminId 
     }
 
     const changedPwd = hashpassword(confirmPassword)
-    await adminAccess.updateOne({adminId: adminId}, {password: changedPwd})
+    await swotAccess.updateOne({SwotId: SwotId}, {password: changedPwd})
     return "password has been changed successfully"
 }
 
-export const getAuthors = async (page: number, Limit:number, endIndex: number, next: { [key: string] : any }, prev: { [key: string] : any }) => {
-    let result : { [key: string] : any } = {} ;
+export const getBooks = async (page: number, Limit:number, endIndex: number, next: { [key: string] : any }, prev: { [key: string] : any }) => {
+    const result : { [key: string] : any } = {} ;
 
-    const authors =  await author.find().sort({_id: -1}).skip(page).limit(Limit).exec()
+    const books =  await book.find().sort({_id: -1}).skip(page).limit(Limit).exec()
 
     if (page > 0 ) {
         result.previousPage = prev
     }
-    if ( endIndex < await author.find().count() ) {
+    if ( endIndex < await book.find().count() ) {
         result.nextPage = next
     }
 
-    result.Authors = authors
+    result.Books = books
     // let resul
 
     return {
@@ -187,24 +187,32 @@ export const getAuthors = async (page: number, Limit:number, endIndex: number, n
     }
 }
 
-export const getAuthor = async (authorId) => {
-    const Author =  await author.findOne({_id: authorId})
-
-    return Author
+export const getBook = async (bookId) => {
+    const Book =  await book.findOne({_id: bookId})
+    return Book
 }
 
-// const getSwots = async () => {
-//     const authors =  await Swot.find().sort({_id: -1})
+export const getBooksByCategory = async (Category, page: number, Limit:number, endIndex: number, next: { [key: string] : any }, prev: { [key: string] : any }) => {
+    const result : { [key: string] : any } = {} ;
 
-//     return authors
-// }
+    const books =  await book.find({category : Category}).sort({_id: -1}).skip(page).limit(Limit).exec()
 
-// const getSwot = async (authorId) => {
-//     const Author =  await author.findOne({_id: authorId})
+    if (page > 0 ) {
+        result.previousPage = prev
+    }
+    if ( endIndex < await book.find().count() ) {
+        result.nextPage = next
+    }
 
-//     return Author
-// }
+    result.Books = books
+    // let resul
 
-//admin get authors, get author , get swots, get swot
+    return {
+        result
+    }
+}
+
+
+//Swot get authors, get author , get swots, get swot
 
 // 1) how to use eslint in nodejs, 2) how to use mongoose middleware 3)how does app.use and app.set() works in express
