@@ -15,13 +15,17 @@ router.post("/enterPasswordVerificationCode", authorController.passwordVerificat
 router.post("/resendPasswordVerificationCode", authorController.resendPasswordVerificationCode)
 router.post("/resetPassword", authorController.resetpassword)
 
+
 //protected APIs
 router.post("/changePassword/:authorId", validateAuthor, authorController.changepassword)
-router.post("/uploadBook/:authorid",authorController.addBook)
+
+router.post("/uploadBook/:authorid",validateAuthor, authorController.addBook)
 
 router.post( "/:bookId/uploadImage", authorController.uploadImage )
-router.post("/:authorId/bulkUpload", authorController.bulkBooksUpload)
+router.post("/:authorId/bulkUpload", authorController.bulkBooksUpload) 
  
-router.get("/books", pagination, authorController.getBooks)
+router.get("/books",validateAuthor, pagination, authorController.getBooks)
+
+router.get("/author/:authorId", authorController.getauthor)
  
 export default router ;

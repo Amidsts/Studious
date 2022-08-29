@@ -53,6 +53,7 @@ const bookSchema = new Schema({
     }],
     status:{
         type: String,
+        enum: ["available", "sold out"],
         required:true
     },
     img: {

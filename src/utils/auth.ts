@@ -1,22 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import jwt from "jsonwebtoken"
+import {verify, sign, SignOptions} from "jsonwebtoken"
 import * as ENV from "../config/env"
 
 //generate random secret using crypto
 export const generateToken = (payload: { [key : string] : any }) => {
-   return jwt.sign(payload, ENV.TOKEN, {expiresIn: 20000})
+   const signOptions:SignOptions ={
+      expiresIn: 20000
+   }
+   return sign(payload, ENV.PrivateKey, signOptions)
 }
 
-export const verifyToken = (authorization: string) => {
+interface TokenPayload {
+   id: string;
+   status: string;
+   role: string
+}
+
+export function verifyToken(authorization: string): Promise<TokenPayload> {
 const [, token] = authorization.split("Bearer ")
 
-   // console.log()
-return {
-   verify: jwt.verify(token, ENV.TOKEN),
-   decode: jwt.decode(token)
-}
+// const VerifyOptions: VerifyOptions = {
+//    algorithms: ['RS256']
+// }
+
+return new Promise ( (resolve, reject) => {
+
+   verify(token, ENV.PrivateKey, (error, decodedToken: TokenPayload) => {
+
+      if (error) return reject( error )
+      
+      return resolve( decodedToken )
+   } )
+} )
 
 }
 
-// export const decodeToken = 

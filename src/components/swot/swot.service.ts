@@ -17,6 +17,7 @@ import { generateToken } from "../../utils/auth"
 import { generateVerificationCode } from "../../utils/general"
 import { DEL, GET, SETEX } from "../../utils/redis"
 import book from "../books/books.model"
+import cart from "../../model/cart.model"
 
 
 export const signUpSwot = async(
@@ -180,7 +181,7 @@ export const getBooks = async (page: number, Limit:number, endIndex: number, nex
     }
 
     result.Books = books
-    // let resul
+    // let result
 
     return {
         result
@@ -212,6 +213,95 @@ export const getBooksByCategory = async (Category, page: number, Limit:number, e
     }
 }
 
+
+export const createCart = async(
+        swotId,
+        {   adminId,
+            bookId,
+            quantity
+        }:{ 
+            adminId: string, 
+            bookId:string,
+            quantity: number
+        } 
+    ) => {
+
+        try {
+            const findBook = await book.findOne({ _id: bookId })
+
+            if ( !findBook || findBook.status !== "available" ) {
+                throw new notFoundError(
+                    `${findBook.bookTitle} is not available`
+                )
+            } else {
+                 const Cart = await cart.findOne({ swotId: swotId })
+                 const bookPrice = quantity * findBook.price
+
+                if ( Cart ) {
+                    const bookIndex = Cart.cartItems.findIndex( book => book.bookId === bookId )
+
+                    if ( bookIndex > -1 ) {
+                        await cart.updateOne(
+                            { "cartItems.bookId" : bookId },
+                            {$set : {
+                                    quantity,
+                                    price: bookPrice
+                            } }
+                        )
+                    } else {
+                        await cart.updateOne(
+                            { "cartItems": 1 },
+                            { $push: {
+                             
+                                bookId,
+                                quantity,
+                                price: findBook.price
+                            
+                            },
+                            $set: {
+                                totalPrice : 
+                            } }
+                        )
+                    }
+                } else {
+                    const newCart = new cart({
+                        adminId,
+                        swotId: swotId,
+                        cartItems: [{
+                            bookId,
+                            quantity,
+                            price: findBook.price
+                        }],
+                        totalPrice: ,
+                        modifiedAt: Date.now
+                    })
+                }
+                
+            }
+
+        }  catch (e) {
+            return e
+        }
+
+        
+        
+
+        // const Cart = await cart.findOne({ swotId: swotId })
+
+        // if ( Cart ) {
+        //    const bookIndex = Cart.cartItems.findIndex( book => book.bookId === bookId )
+
+        //    if ( bookIndex > -1 ) {
+        //         const cartBook = Cart.cartItems[ bookIndex ]
+
+        //         cartBook.quantity = quantity
+        //         Cart.cartItems[bookIndex] = cartBook
+        //    } else {
+            
+        //         Cart.push({ quantity, adminId, bookId, price: findBook.price })
+        //    }
+        // }
+        }
 
 //Swot get authors, get author , get swots, get swot
 

@@ -17,6 +17,8 @@ import { generateToken } from "../../utils/auth"
 import { generateVerificationCode } from "../../utils/general"
 import { DEL, GET, SETEX } from "../../utils/redis"
 import author from "../author/author.model"
+import Swot from "../swot/swot.model"
+
 
 export const signUpAdmin = async(
     payload: Record<string, string | number> 
@@ -167,6 +169,13 @@ export const changepassword = async ( payload: Record<string, string | number>, 
     return "password has been changed successfully"
 }
 
+export const getAdmin = async (id: string) => {
+    const admin = await Admin.findById(id)
+    return admin
+}
+
+
+//author
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getAuthors = async (page: number, Limit:number, endIndex: number, next: { [key: string] : any }, prev: { [key: string] : any }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -190,22 +199,24 @@ export const getAuthors = async (page: number, Limit:number, endIndex: number, n
 }
 
 export const getAuthor = async (authorId) => {
-    const Author =  await author.findOne({_id: authorId})
+    const Author =  await author.findById(authorId)
 
     return Author
 }
 
+
+//swot
 // const getSwots = async () => {
 //     const authors =  await Swot.find().sort({_id: -1})
 
 //     return authors
 // }
 
-// const getSwot = async (authorId) => {
-//     const Author =  await author.findOne({_id: authorId})
 
-//     return Author
-// }
+export const getSwot = async (swotId) => {
+    const swot = await Swot.findById(swotId)
+    return swot
+}
 
 //admin get authors, get author , get swots, get swot
 

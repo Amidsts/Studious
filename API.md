@@ -5,11 +5,11 @@ ADMIN {
 }
 
 AUTHOR {
-        signup,         sign in,        forgotPassword,         adminEditHisDetails,         enterForgotPasswordCode,        resetPassword   changePasswordWhileOnline, addBooks, addBulkBooks, getBooks, getBooks, getBooksByCategory,      editBooksDetails,      addBookImage,        getWallet,         withdrawFromWalletToBankAccount,
+        signup,         sign in,        forgotPassword,         adminEditHisDetails,         enterForgotPasswordCode,        resetPassword   changePasswordWhileOnline, addBooks, addBulkBooks, getBooks, getBooks, getBooksByCategory,      editBooksDetails,      addBookImage,        getWallet,*         withdrawFromWalletToBankAccount*,
 }
 
 SWOT {
-        signup,         sign in,        forgotPassword,         enterForgotPasswordCode,        resetPassword   changePasswordWhileOnline,      getBooks,        getBooks,      getBooksByCategory,      addBooksToCart,      placeOrder,
+        signup,         sign in,        forgotPassword,         enterForgotPasswordCode,        resetPassword   changePasswordWhileOnline,      getBooks,        getBooks,      getBooksByCategory,      addBooksToCart,*      placeOrder,*
 }
 
 SALESrep {

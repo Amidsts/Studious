@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Author from "./author.model"
 import { generateToken } from "../../utils/auth"
 // import {adminstatusENUM, bookStatusENUM} from "../../helpers/custom"
@@ -74,7 +75,8 @@ export const signupAuthor = async(
     }
 }
 
-export const signinAuthor = async (payload: Record<string, string | number>) => {
+export const signinAuthor = async (
+    payload: Record<string, string | number>) => {
     const {email, password} = signInAuthorValidation(payload)
     
     const authorExist  = await Author.findOne({email})
@@ -107,7 +109,8 @@ export const signinAuthor = async (payload: Record<string, string | number>) => 
 
     const Token = generateToken({id:authorExist._id, status :authorExist.status, role: authorSecret.role})
 
-    return {
+    return {  
+        id: authorExist._id,
         name : authorExist.firstName + " " + authorExist.lastName,
         token: Token
     }
@@ -215,6 +218,7 @@ export const changePassword = async (payload : Record<string, string | number>, 
 }
 
 
+//book
 // author add one book
 export const addbook  = async (payload: Record<string, string | number>, authorid: string) => {
 
@@ -286,6 +290,7 @@ export const addImage = async (imgFile, bookId) => {
 
 }
 
+
 //add multiple books at once using csv file
 export const bulkBookUpload = async (authorid: string, payload: {[key: string]: any}[] ) => {
 
@@ -350,8 +355,21 @@ export const books = async (offset: number, Limit: number, endIndex: number, nex
     results.Books = Books 
 
     return results
-
 } 
+
+
+//Author
+export const findAuthor = async (id: string) => {
+    try {
+       const author = await Author.findById(id)
+       if (!author) {
+        throw new notFoundError("author does not exist")
+       }
+       return author
+    } catch (err) {
+        return err
+    }
+}
 
 //get one book and 
 //comment my code

@@ -1,9 +1,14 @@
 import { verifyToken  } from "../utils/auth";
-import {authorizationError} from "../helpers/errors"
+import {authorizationError, notFoundError} from "../helpers/errors"
+import { findAuthor } from "../components/author/author.service";
+import { getAdmin } from "../components/admin/admin.service";
+import { getSwot } from "../components/admin/admin.service";
 
 import { NextFunction } from "express";
 
-export const validateAuthor = (req, _res, next: NextFunction) => {
+export const validateAuthor = async (
+    req, _res, next: NextFunction
+    ) => {
     
     const {authorization} = req.headers
     
@@ -11,33 +16,119 @@ export const validateAuthor = (req, _res, next: NextFunction) => {
         throw new authorizationError("token not provided")
     }
 
-   verifyToken(authorization)
-//    console.log(verifyToken(authorization))
+    let id: string, role: string
+    try {
+
+        ( {id, role} = await verifyToken(authorization) )
+
+        req.id = id
+        req.role = role
+
+        if (!req.id || !req.role) {
+            throw new authorizationError(
+                "Authorization Token is invalid or has expired"
+            )
+        }
+        const getAuthor = findAuthor(req.id)
+
+        if ( !getAuthor ) {
+            throw new notFoundError("Author account not found")
+        }
+        if ( req.role != "author") {
+            throw new authorizationError(
+                "You are not authorized"
+            )
+        }
+        return next ()
+    } catch (err) {
+        throw new authorizationError(
+            `Invalid Token  ${err}`
+        )
+    }
+}
+
+
+
+export const validateAdmin = async (req, _res, next: NextFunction) => {
+    
+    const {authorization} = req.headers
+
+    if (!authorization) {
+        throw new authorizationError(
+            "Authorization Token is invalid or has expired"
+        )
+    }
+    let id: string, role: string
+    try {
+
+        ( {id, role} = await verifyToken(authorization) )
+
+        req.id = id
+        req.role = role
+
+        if (!req.id || !req.role) {
+            throw new authorizationError(
+                "Authorization Token is invalid or has expired"
+            )
+        }
+        const findAdmin = getAdmin(req.id)
+
+        if ( !findAdmin ) {
+            throw new notFoundError("Admin account not found")
+        }
+        if ( req.role != "author") {
+            throw new authorizationError(
+                "You are not authorized"
+            )
+        }
+        return next ()
+
+    } catch (err) {
+        throw new authorizationError(
+            `Invalid Token  ${err}`
+        )
+    }
+
    return next()
 }
 
-export const validateAdmin = (req, _res, next: NextFunction) => {
+export const validateSwot = async (req, _res, next: NextFunction) => {
     
     const {authorization} = req.headers
 
     if (!authorization) {
-        throw new authorizationError("token not provided")
+        throw new authorizationError(
+            "Authorization Token is invalid or has expired"
+        )
     }
+    let id: string, role: string
+    try {
 
-   verifyToken(authorization).verify
+        ( {id, role} = await verifyToken(authorization) )
 
-//    console.log((verifyToken(authorization).decode))
-//    let {id, Role} = (verifyToken(authorization)!.decode)
-   return next()
-}
+        req.id = id
+        req.role = role
 
-export const validateSwot = (req, _res, next: NextFunction) => {
-    
-    const {authorization} = req.headers
-    if (!authorization) {
-        throw new authorizationError("token not provided")
+        if (!req.id || !req.role) {
+            throw new authorizationError(
+                "Authorization Token is invalid or has expired"
+            )
+        }
+        const findSwot = getSwot(req.id)
+
+        if ( !findSwot ) {
+            throw new notFoundError("User account not found")
+        }
+        if ( req.role != "author") {
+            throw new authorizationError(
+                "You are not authorized"
+            )
+        }
+        return next ()
+
+    } catch (err) {
+        throw new authorizationError(
+            `Invalid Token  ${err}`
+        )
     }
-
-   verifyToken(authorization)
-   return next()
 }

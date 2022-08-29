@@ -174,3 +174,18 @@ export const getBooks = async (req: Request, res, next: NextFunction) => {
     }
    
 }  
+
+export const getauthor = async (req: Request, res, next: NextFunction) => { 
+
+    try {
+
+        const response = await authorService.findAuthor(req.params.authorId)
+
+        return res.json(responseHandler(response))
+
+    } catch (error) {
+        res.json(error)  
+        next(error) 
+    }
+   
+}  

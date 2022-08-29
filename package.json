@@ -10,13 +10,14 @@
     "dev": "nodemon src/app.ts",
     "lint": "eslint",
     "build": "NODE_ENV='production' webpack",
-    "test": "jest"
+    "test": "jest --Watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/express-validator": "^3.0.0",
+    "@types/jest": "^28.1.7",
     "@types/joi": "^17.2.3",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/mongoose": "^5.11.97",
