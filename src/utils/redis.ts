@@ -1,8 +1,9 @@
 import Redis from "ioredis"
 
-import * as ENV from "../config/env"
+// import * as ENV from "../config/env"
 
 const redis = new Redis();
+
 export const connectRedis = async () => {
 
     try {

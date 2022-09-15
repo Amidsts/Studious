@@ -11,4 +11,4 @@ export const CLOUDINARY_API_SECRET = env.cloudinary_Api_Secret || ""
 export const PublicKey : string = env.JwtPublicKey || ""
 export const PrivateKey : string = env.JwtPrivateKey || ""
 // export const mailPassword : string = env.mailPassword || ""
-// export const mailUrl : string = env.mail_Url || ""
+// export const mailUrl : string = env.mail_Url || ""con

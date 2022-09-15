@@ -27,6 +27,7 @@ import {uploader} from "../../config/cloudinary.config"
 import {UploadedFile} from "express-fileupload"
 
 
+//include log out api, for log out, access token has to be stored on redis, so we can delete it when a user log out of the website
 export const signupAuthor = async(
     payload: Record<string, string | number>
 ) => {
@@ -35,9 +36,8 @@ export const signupAuthor = async(
     aboutAuthor, country, state, city, localGovt, postalCode, password} = signUpAuthorValidation(payload)
 
     try {
-        const authorExist = await Author.findOne( { email: payload.email
-        })  
-          
+        const authorExist = await Author.findOne( { email })  
+        
         if (authorExist) {
            throw new authorizationError("Author already exist")
             return
@@ -289,7 +289,6 @@ export const addImage = async (imgFile, bookId) => {
     }
 
 }
-
 
 //add multiple books at once using csv file
 export const bulkBookUpload = async (authorid: string, payload: {[key: string]: any}[] ) => {

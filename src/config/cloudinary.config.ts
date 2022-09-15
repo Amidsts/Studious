@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express"
 
 import * as ENV from "./env"
 
+//set cloudinary configuration globally
 export const cloudCloudinary = (req: Request, res: Response, next: NextFunction) => {
        v2.config({
             cloud_name: ENV.CLOUDINARY_NAME,

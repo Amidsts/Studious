@@ -22,7 +22,7 @@ const [, token] = authorization.split("Bearer ")
 
 // const VerifyOptions: VerifyOptions = {
 //    algorithms: ['RS256']
-// }
+// }  
 
 return new Promise ( (resolve, reject) => {
 
