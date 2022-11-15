@@ -13,3 +13,5 @@
 3. Typescript
 4. MongoDB
 5. cloudinary
+
+## STATUS: IN PROGRESS
