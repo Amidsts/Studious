@@ -1,4 +1,4 @@
-## BookStore is a mini e-commerce book store, books are kept in the library, the features of the application includes the following:
+## Studious is a mini e-commerce book store application, books are kept in the library, a user(SWOT) Can got to the library to select books to purchase and add them to cart, the features of the application includes the following:
 
 1. Library: This is where authours upload books, and users visit to purchase book
 2. Swot:  Registered users are referred to as Swots
