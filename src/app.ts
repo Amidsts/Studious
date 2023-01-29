@@ -1,4 +1,4 @@
-import express from "express" ;
+import express, { Response, Request } from "express" ;
 import fileUpload from "express-fileupload";
 import path from "path"
 
@@ -8,6 +8,7 @@ import adminRoutes from "./components/admin/admin.routes"
 import authorRoutes from "./components/author/author.routes"
 // import userRoutes from "./components/user/user.routes"
 import bookRoutes from "./components/books/books.routes"
+import paymentRoutes from "./components/payment/payment.routes"
 import {port} from "./config/env"
 import {cloudCloudinary} from "./config/cloudinary.config"
 import { connectRedis } from "./utils/redis";
@@ -15,16 +16,18 @@ import { connectRedis } from "./utils/redis";
 
 const main = async () => {
     const app = express() ;
-    app.use(express.json());
-    app.use(express.urlencoded({extended: true})) ;
-    app.use(fileUpload({
-        limits: { fileSize: 50 * 1024 * 1024 },
-        abortOnLimit: true, // abort when file size exceed limits
-        // createParentPath: true
-        useTempFiles : true,
-        tempFileDir : path.join(__dirname, "./upload"),
+
+    app.use(express.json())
+        .use(express.urlencoded({extended: true})) 
+        .use(fileUpload({
+            limits: { fileSize: 50 * 1024 * 1024 },
+            abortOnLimit: true, // abort when file size exceed limits
+            // createParentPath: true
+            useTempFiles : true,
+            tempFileDir : path.join(__dirname, "./upload"),
         
-    }));
+        }))
+        .use(express.static("public"))
 
     app.use("*", cloudCloudinary)
 
@@ -40,7 +43,7 @@ const main = async () => {
     connectRedis()
 
     //connect to database
-    connectDb(); 
+    // connectDb(); 
      
     // const oneDay = 1000 * 60 * 60 * 24;
     // app.use( session({
@@ -51,9 +54,15 @@ const main = async () => {
     // }) )
 
     app.use("/v1/admin", adminRoutes)
-    app.use("/v1/author", authorRoutes)
-    app.use("/v1/Books", bookRoutes)
+        .use("/v1/author", authorRoutes)
+        .use("/v1/Books", bookRoutes)
+        .use("/v1/Payment", paymentRoutes)
 
+    app.get("/form", (req: Request, res: Response) => {
+        
+        res.status(200).sendFile(path.resolve(__dirname, "public/index.html"))
+
+    })
 
     app.listen(port, () => {
         console.log( `server is up and running on ${port}` )

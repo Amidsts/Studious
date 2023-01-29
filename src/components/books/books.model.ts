@@ -80,6 +80,6 @@ const bookSchema = new Schema({
     }
 },{timestamps: true})
 
-const book: Model<IBooks> = model("Books", bookSchema)
+const book = model<IBooks>("Books", bookSchema)
 
 export default book

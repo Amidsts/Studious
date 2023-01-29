@@ -54,7 +54,7 @@ const adminSchema = new Schema(
         },
         commentsMade: [
             {
-                type: string
+                type: String
             }
         ]
     }, 

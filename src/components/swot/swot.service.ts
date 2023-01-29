@@ -259,7 +259,7 @@ export const createCart = async(
                             
                             },
                             $set: {
-                                totalPrice : 
+                                totalPrice : 20
                             } }
                         )
                     }
@@ -272,7 +272,7 @@ export const createCart = async(
                             quantity,
                             price: findBook.price
                         }],
-                        totalPrice: ,
+                        totalPrice: 20,
                         modifiedAt: Date.now
                     })
                 }

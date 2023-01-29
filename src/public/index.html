@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studious</title>
+</head>
+<body>
+    <header></header>
+
+    <main>
+        <form action="/v1/Payment/makePayment/90" method="POST">
+            
+            <label for="userId">userId</label> <input type="text" required><br>
+            
+            <label for="Name">Name</label> <input type="text" name="Name" required><br>
+
+            <label for="email">email</label> <input type="email" name="Email" required><br>
+
+           <label for="amount">Amount</label> <input type="text" name="Amount" required><br>
+
+           <label for="paymentType">paymentType</label> 
+           <select name="paymentType">
+                <option value="flutterwave">flutterwave</option>
+                <option value="paypal">paypal</option>
+                <option value="paystack">paystack</option>
+                <option value="stripe">stripe</option>
+                <option value="Remita">Remita</option>
+           </select><br>
+           <input type="submit", value="Submit">
+
+        </form>
+    </main>
+
+    <footer></footer>
+</body>
+</html>
