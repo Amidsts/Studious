@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "ts-node-dev src/app.ts",
     "build": "rm -rf dist && tsc",
-    "start": "node dist/src/app.js"
+    "start": "npm run build && node dist/src/app.js"
   },
   "author": "",
   "license": "ISC",
