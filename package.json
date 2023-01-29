@@ -4,13 +4,9 @@
   "description": "a book store",
   "main": "src/app.ts",
   "scripts": {
-    "tsc": "tsc",
-    "start": "webpack-dev-derver --mode development",
     "start:dev": "ts-node-dev src/app.ts",
-    "dev": "nodemon src/app.ts",
-    "lint": "eslint",
-    "build": "NODE_ENV='production' webpack",
-    "test": "jest --Watch"
+    "build": "rm -rf dist && tsc",
+    "start": "node dist/src/app.js"
   },
   "author": "",
   "license": "ISC",
