@@ -10,7 +10,6 @@ import mongoose from "mongoose"
 // import Swot from "../swot/swot.model"
 
 export async function makePayment(payload: {[key: string]: any}, userId: string) {
-
     
     try {
 
@@ -28,30 +27,30 @@ export async function makePayment(payload: {[key: string]: any}, userId: string)
         
         const referenceId = new mongoose.Types.ObjectId()
 
-        await initializeTransaction({
+       const initializePaymemnt =  await initializeTransaction({
             Email,
             Amount,
             Name,
             transactionId: referenceId.toString()
         })
 
-        await verifyTransaction(
-            referenceId.toString()
-        )
-        
-        
-        const newPayment = {
-            Email,
-            Amount,
-            paymentType: "paystack",
-            userid: userId,
-            transactionId: referenceId
-        }
-        
-        
-        return newPayment
+        return initializePaymemnt
 
     } catch (error) {
         return error
     }
 } 
+
+export async function paymentCallback (referenceId: string) {
+    try {
+
+       const response =  await verifyTransaction(referenceId)
+
+       console.log(response);
+
+       return response
+
+    } catch (error) {
+        return error
+    }
+}

@@ -31,27 +31,11 @@ const main = async () => {
 
     app.use("*", cloudCloudinary)
 
-    // const myurl = 'mongodb://localhost:27017';
- 
-    // MongoClient.connect(myurl, (err, client) => {
-    //   if (err) return console.log(err)
-    //   let db = client.db('test') 
-        
-    // })
-
     //connect redis
     connectRedis()
 
     //connect to database
     // connectDb(); 
-     
-    // const oneDay = 1000 * 60 * 60 * 24;
-    // app.use( session({
-    //     secret: 'unvsjnkljsbcnieugu3ty78047',
-    //     resave: false,
-    //     saveUninitialized: true,
-    //     cookie: { secure: true, maxAge: oneDay }
-    // }) )
 
     app.use("/v1/admin", adminRoutes)
         .use("/v1/author", authorRoutes)
