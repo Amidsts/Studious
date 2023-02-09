@@ -12,7 +12,10 @@ export async function initializePaymentController (req: Request, res: Response) 
     try {
         const response = await makePayment(req.body, req.params.userId)
 
-        res.redirect(response.data.authorization_url)
+        req.body.paymentType === "paystack" ? res.redirect(response.data.authorization_url)
+        : req.body.paymentType === "flutterwave" ? res.redirect(response.data.link)
+        : console.log("gbuh");
+        
 
     } catch (error) {
         return error
@@ -21,7 +24,7 @@ export async function initializePaymentController (req: Request, res: Response) 
 
 export async function paymentCallbackController (req: Request, res: Response) {
     try {
-        const response = await paymentCallback(req.query.reference as string)
+        const response = await paymentCallback( req.params.paymentType, req.params.transactionId )
 
         res.send(response)
        

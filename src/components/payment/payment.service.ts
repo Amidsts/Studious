@@ -1,13 +1,8 @@
-// import payment from "./payment.model"
-import { 
-    initializeTransaction,
-    verifyTransaction 
-} from "../../config/paymentTypes/paystck"
+import mongoose from "mongoose"
 import { 
     makePaymentValidation 
 } from "./payment.validate"
-import mongoose from "mongoose"
-// import Swot from "../swot/swot.model"
+
 
 export async function makePayment(payload: {[key: string]: any}, userId: string) {
     
@@ -15,23 +10,34 @@ export async function makePayment(payload: {[key: string]: any}, userId: string)
 
         const {
             Email,
+            firstName,
+            lastName,
+            currency,
             Amount,
-            Name,
             paymentType
         }: {
             Email: string,
+            firstName: string,
+            lastName: string,
+            currency: "NGN" | "USD" | "GHS" | "ZAR",
             Amount: number,
-            paymentType: string,
-            Name: string
+            paymentType: string
         } = makePaymentValidation(payload)
         
-        const referenceId = new mongoose.Types.ObjectId()
-
-       const initializePaymemnt =  await initializeTransaction({
-            Email,
+        const referenceId = (new mongoose.Types.ObjectId()).toString()
+        console.log(paymentType);
+        
+        const initializePaymemnt =await require(`../../utils/paymentgateway/${paymentType}`)
+        .default
+        .initializeTransaction({
+            user: {
+                firstName,
+                lastName,
+                Email
+            },
             Amount,
-            Name,
-            transactionId: referenceId.toString()
+            currency,
+            transactionId: referenceId
         })
 
         return initializePaymemnt
@@ -41,12 +47,12 @@ export async function makePayment(payload: {[key: string]: any}, userId: string)
     }
 } 
 
-export async function paymentCallback (referenceId: string) {
+export async function paymentCallback (paymentType: string, transactionId: string) {
     try {
 
-       const response =  await verifyTransaction(referenceId)
-
-       console.log(response);
+       const response =await require(`../../utils/paymentgateway/${paymentType}`)
+       .default
+       .verifyTransaction(transactionId)
 
        return response
 

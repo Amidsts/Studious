@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { statusENUM} from "../../helpers/custom"
+import { statusENUM} from "../../helpers/customTypes"
 export interface IAuthor {
     // fullName: string;
     firstName: string;

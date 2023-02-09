@@ -16,7 +16,7 @@ import { connectRedis } from "./utils/redis";
 
 const main = async () => {
     const app = express() ;
-
+    
     app.use(express.json())
         .use(express.urlencoded({extended: true})) 
         .use(fileUpload({
@@ -34,6 +34,8 @@ const main = async () => {
     //connect redis
     connectRedis()
 
+    // require("./utils/payment/paymentconfig/paystack").name("asad")
+        
     //connect to database
     // connectDb(); 
 

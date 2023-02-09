@@ -10,14 +10,21 @@
     <header></header>
 
     <main>
-        <form action="/v1/Payment/makePayment/90" method="POST">
+        <form action="/v1/Payment/makePayment" method="POST">
             
-            <label for="userId">userId</label> <input type="text" required><br>
+            <label for="firstName">firstName</label> <input type="text" name="firstName" required><br>
             
-            <label for="Name">Name</label> <input type="text" name="Name" required><br>
+            <label for="lastName">lastName</label> <input type="text" name="lastName" required><br>
 
             <label for="email">email</label> <input type="email" name="Email" required><br>
 
+            <select name="currency">
+                <option value="USD">USD</option>
+                <option value="NGN">NGN</option>
+                <option value="ZAR">ZAR</option>
+                <option value="GHS">GHS</option>
+            </select>
+            
            <label for="amount">Amount</label> <input type="text" name="Amount" required><br>
 
            <label for="paymentType">paymentType</label> 
