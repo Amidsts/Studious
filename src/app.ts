@@ -14,8 +14,10 @@ import {cloudCloudinary} from "./config/cloudinary.config"
 import { connectRedis } from "./utils/redis";
 
 
+const app = express() ;
+
 const main = async () => {
-    const app = express() ;
+    
     
     app.use(express.json())
         .use(express.urlencoded({extended: true})) 
@@ -37,7 +39,7 @@ const main = async () => {
     // require("./utils/payment/paymentconfig/paystack").name("asad")
         
     //connect to database
-    // connectDb(); 
+    connectDb(); 
 
     app.use("/v1/admin", adminRoutes)
         .use("/v1/author", authorRoutes)
@@ -58,3 +60,6 @@ const main = async () => {
 main().catch ((err) => {
     console.log(err.messsage)
 }) ; 
+
+
+export default app

@@ -40,7 +40,7 @@ export const signupAuthor = async(
         
         if (authorExist) {
            throw new authorizationError("Author already exist")
-            return
+            
         } 
         
         const hashedPassword = hashpassword(password)

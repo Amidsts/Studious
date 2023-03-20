@@ -14,6 +14,7 @@ export const signUpAuthor = async (req: Request, res: Response, next: NextFuncti
     try {
         const response = await authorService.signupAuthor(req.body)
          res.json(responseHandler(response))
+         
     } catch (error) {
         res.json(error)
         next(error)
