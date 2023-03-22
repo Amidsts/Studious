@@ -11,7 +11,7 @@ jobs:
       - run:
           name: run unit tests
           command: npm run test
-      - store_test_rersult:
+      - store_test_result:
           path: test-results
       - store_artifacts:
           path: test-results
