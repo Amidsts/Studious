@@ -9,8 +9,8 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run:
-          name: run test
-          command: npm run tests
+          name: run tests
+          command: npm test
       - persist_to_workspace:
           root: ~/studious
           paths:
