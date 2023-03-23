@@ -1,21 +1,24 @@
 version: 2.1 #circleci version
+orbs:
+  node: circleci/node@5.1.0
 jobs: 
   run_tests:  #job name
-    docker: #where the source code is going to run, in this case it is docker. It is referred to as the primary container
-      - image: cimg/node:19.8.0
-    steps: #collection of executable command
-      - checkout # built-in step to clone source code from github
-      - run: # Run/execute custom commands
-          name: install npm dependencies
-          command: npm install
+    executor: node/default
+    steps: 
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
       - run:
-          name: run unit tests
-          command: npm run test
-      - store_test_result:
-          path: test-results
-      - store_artifacts:
-          path: test-results
+          name: run test
+          command: npm run tests
+      - persist_to_workspace:
+          root: ~/studious
+          paths: .
 workflows:
-  build_test:
-    jobs:
+  run_test_workflow:
+    jobs: 
       - run_tests
+          filters:
+            branches:
+              only: master
+
