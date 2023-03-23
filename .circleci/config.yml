@@ -13,12 +13,10 @@ jobs:
           command: npm run tests
       - persist_to_workspace:
           root: ~/studious
-          paths: .
+          paths:
+            - .
 workflows:
   run_test_workflow:
     jobs: 
       - run_tests
-          filters:
-            branches:
-              only: master
 
