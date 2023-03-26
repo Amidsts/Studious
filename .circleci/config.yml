@@ -3,11 +3,14 @@ orbs:
   node: circleci/node@5.1.0
 jobs: 
   run_tests:  #job name
-    executor: node/default
+    docker:
+      - image: cimg/node:19.8.1
+      - image: circleci/mongo:4.0-xenial-ram
     steps: 
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - run:
+          name: install dependencies
+          command: npm install
       - run:
           name: run tests
           command: npm test
