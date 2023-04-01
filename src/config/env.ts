@@ -3,8 +3,8 @@ dotenv.config() ;
 
 const { env } = process
 
-//export const Url : string = env.mongoUrl || ""
-export const Url : string = env.testMongoUrl || ""
+export const Url : string = env.mongoUrl || ""
+// export const Url : string = env.testMongoUrl || ""
 export const port  = env.PORT || "6379"
 export const CLOUDINARY_NAME = env.cloudinary_name || ""
 export const CLOUDINARY_API_KEY = env.cloudinary_Api_Key || ""
