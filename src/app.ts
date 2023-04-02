@@ -34,7 +34,7 @@ const main = async () => {
     app.use("*", cloudCloudinary)
 
     //connect redis
-    // connectRedis()
+    connectRedis()
 
     // require("./utils/payment/paymentconfig/paystack").name("asad")
         

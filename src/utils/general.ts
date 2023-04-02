@@ -9,7 +9,6 @@ export const generateVerificationCode = () => {
         const code =  characters[Math.floor(Math.random() * characters.length)] ;
         verificationCode += code ;
     }
-    console.log(`verification code is ${verificationCode}`)
     return verificationCode
 } 
 

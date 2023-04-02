@@ -8,17 +8,17 @@ import Author from "../src/components/author/author.model"
 
 const newAuthor = {
     _id: mongoose.Types.ObjectId,
-    firstName: "Ameedat",
+    firstName: "Amidat",
     lastName: "Mustapha",
+    password: "sk9aj2hbskh",
+    email: "amidst@gmail.com",
     gender: "female",
-    email: "Amidst@gmail.com",
-    aboutAuthor: "hello, here is some test",
+    aboutAuthor: "this is a woman in tech",
     country: "Nigeria",
-    state: "kwara",
+    state: "Kwara",
     city: "Ilorin",
-    localGovt: "Ilorin west",
-    postalCode: "4652387",
-    password: "tguewg622b"
+    localGovt: "Ilorin east",
+    postalCode: "5609218"
 }
 
 beforeAll( async () => {
@@ -42,9 +42,40 @@ describe("author", () => {
         .post("/v1/author/signUpAuthor")
         .send(newAuthor)
         
-        expect(response.body).not.toBe(null)
+        expect(response.body.data).not.toBe(null)
 
     })
     
+    it("should sign a user in", async () => {
+        
+        const response = await request(app)
+        .post("/v1/author/signInAuthor")
+        .send({
+            email: newAuthor.email,
+            password: newAuthor.password
+        })
 
+        expect(response.body.data.name).toBe( `${newAuthor.firstName} ${newAuthor.lastName}`
+        )
+    })
+
+    it("verify user mail for password reset", async () => {
+
+        const response = await request(app)
+        .post("/v1/author/forgotPassword")
+        .send({
+            email: newAuthor.email
+        })
+        
+        expect(response.body.data).toHaveLength(6)
+    })
+
+    // it("enter forgot password verification code", async () => {
+
+    //     const response = await request(app)
+    //     .post("/v1/author/enterPasswordVerificationCode")
+    //     .send({
+    //         code: 
+    //     })
+    // })
 })

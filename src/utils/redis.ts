@@ -23,8 +23,8 @@ export const connectRedis = async () => {
      try {
         // console.log('redis key set success')
        const c = await redis.setex(key, 60*20, val)
-       console.log(`see some works ${c}`)
-        return c
+
+       return c
      } catch (err) {
            
         console.log(`redis err here ${err}`)

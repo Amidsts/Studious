@@ -13,7 +13,7 @@ export const signUpAuthor = async (req: Request, res: Response, next: NextFuncti
 
     try {
         const response = await authorService.signupAuthor(req.body)
-         res.json(responseHandler(response))
+         res.json(response)
          
     } catch (error) {
         res.json(error)
@@ -27,7 +27,7 @@ export const signInAuthor = async (req: Request, res: Response, next: NextFuncti
         // limitWrongPassword(req, res) 
         const response = await authorService.signinAuthor(req.body)
         
-         res.json(responseHandler(response))
+         res.json(response)
     } catch (error) {
         res.json(error) 
         next(error)
@@ -41,7 +41,7 @@ export const forgotPasswordEmail = async (req: Request, res: Response, next: Nex
         
         const response = await authorService.passwordVerificationEmail(req.body)
         
-         res.json(responseHandler(response))
+         res.json(response)
     } catch (error) {
         res.json(error) 
         next(error)

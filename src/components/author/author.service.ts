@@ -4,7 +4,7 @@ import Author from "./author.model"
 import { generateToken } from "../../utils/auth"
 // import {adminstatusENUM, bookStatusENUM} from "../../helpers/custom"
 import authorAccess from "../authModel/auth.author.model"
-import { hashpassword, checkHash } from "../../helpers/general"
+import { hashpassword, checkHash, responseHandler } from "../../helpers/general"
 import {
         authorizationError, 
         notFoundError, 
@@ -69,7 +69,8 @@ export const signupAuthor = async(
 
         //send signUp mail
         // mailer(newauthor.email)
-        return newauthor
+        
+        return responseHandler(newauthor)
     } catch (err) {
         return err
     }
@@ -108,12 +109,13 @@ export const signinAuthor = async (
     }  
 
     const Token = generateToken({id:authorExist._id, status :authorExist.status, role: authorSecret.role})
+    
 
-    return {  
+    return responseHandler({  
         id: authorExist._id,
         name : authorExist.firstName + " " + authorExist.lastName,
         token: Token
-    }
+    })
 
 }
 
@@ -134,7 +136,7 @@ export const passwordVerificationEmail = async ( payload: Record<string, string 
     await SETEX(`authorVerificationcode_${code}`, code)
 
     //send verification code to user's mail
-    return code
+    return responseHandler(code)
 } 
 
 //supply verificattion code and verify verificattion code
