@@ -12,7 +12,7 @@ router.post("/signInAuthor", authorController.signInAuthor)
 
 router.post("/forgotPassword", authorController.forgotPasswordEmail)
 router.post("/enterPasswordVerificationCode", authorController.passwordVerificationCode)
-router.post("/resendPasswordVerificationCode", authorController.resendPasswordVerificationCode)
+router.get("/resendPasswordVerificationCode", authorController.resendPasswordVerificationCode)
 router.post("/resetPassword", authorController.resetpassword)
 
 

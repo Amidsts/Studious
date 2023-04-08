@@ -59,7 +59,7 @@ describe("author", () => {
         )
     })
 
-    it("verify user mail for password reset", async () => {
+    it("verify user mail for forgot password", async () => {
 
         const response = await request(app)
         .post("/v1/author/forgotPassword")
@@ -78,4 +78,22 @@ describe("author", () => {
     //         code: 
     //     })
     // })
+
+    // it("should resend vevrification code", async () =>{
+
+    //     const response = await request(app)
+    //     .get("/v1/author/resendPasswordVerificationCode")
+    //     .send()
+
+    //     expect(response.body.data).
+    // })
+
+    it("should reset password", async () => {
+
+        const response = await request(app)
+        .post("/v1/author/resetPassword")
+        .send({
+            
+        })
+    })
 })
